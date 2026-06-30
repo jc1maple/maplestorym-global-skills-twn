@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MapleStory M Animation Candidate Review</title>
+  <style>
+    body { margin: 0; font-family: Arial, "Microsoft JhengHei", sans-serif; background: #f4f6f8; color: #1f2933; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .summary { margin: 0 0 20px; color: #52606d; line-height: 1.5; }
+    .toolbar { position: sticky; top: 0; z-index: 3; display: flex; gap: 10px; align-items: center; padding: 12px 0; background: #f4f6f8; }
+    .toolbar button, .actions button { border: 1px solid #cbd5df; background: white; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+    .toolbar button:hover, .actions button:hover { background: #eef5f3; }
+    .review-card { background: white; border: 1px solid #d9e2ec; border-radius: 8px; margin: 18px 0; padding: 16px; box-shadow: 0 1px 2px rgba(16,24,40,.05); }
+    .review-card header { display: flex; gap: 16px; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e5edf4; padding-bottom: 12px; }
+    .eyebrow { color: #627d98; font-size: 12px; margin-bottom: 4px; }
+    h2 { font-size: 20px; margin: 0 0 6px; }
+    code { font-family: Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions button.is-active[data-vote="replace"] { background: #d9f2e6; border-color: #48a868; }
+    .actions button.is-active[data-vote="reject"] { background: #ffe3e3; border-color: #d64545; }
+    .actions button.is-active[data-vote="unsure"] { background: #fff4d6; border-color: #d9a441; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+    section { min-width: 0; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    .stage { width: 100%; max-width: 520px; aspect-ratio: 380 / 240; background-repeat: no-repeat; background-color: #121518; border-radius: 6px; border: 1px solid #111827; image-rendering: auto; }
+    p { margin: 8px 0 0; color: #52606d; line-height: 1.4; }
+    .meta { font-size: 12px; }
+    .note-label { display: grid; gap: 6px; margin-top: 12px; color: #52606d; font-size: 13px; }
+    textarea { min-height: 54px; resize: vertical; border: 1px solid #cbd5df; border-radius: 6px; padding: 8px; font: inherit; }
+    .export { white-space: pre-wrap; background: #102a43; color: #d9e2ec; padding: 12px; border-radius: 6px; display: none; }
+    @media (max-width: 780px) {
+      .wrap { padding: 14px; }
+      .review-card header { display: block; }
+      .actions { margin-top: 10px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Animation Candidate Review</h1>
+    <p class="summary">左右並排播放目前網站動畫與候選新版動畫。你的選擇會存在這個瀏覽器的 localStorage；按匯出可以把判斷結果貼回來。</p>
+    <div class="toolbar">
+      <button id="prev">上一個</button>
+      <button id="next">下一個</button>
+      <button id="export">匯出判斷</button>
+      <button id="clear">清除判斷</button>
+    </div>
+    <pre class="export" id="export-box"></pre>
+
+    <article class="review-card" data-key="Skill_Adele_FloranHerosWill_01">
+      <header>
+        <div>
+          <div class="eyebrow">#01 manual_review_candidate / score 96</div>
+          <h2>Adele / 雷普勇士的意志</h2>
+          <code>Skill_Adele_FloranHerosWill_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/adele/Adele_FloranHerosWill_01.png?v=ef6db3ac9d3a" data-preview-frames="12" data-preview-width="380" data-preview-height="240" data-preview-cols="12" data-preview-rows="1" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/flora/adele/floranheroswill_sd/floranheroswill.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="01_Adele_Adele_FloranHerosWill_01.png?v=2c37f0040b7c" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/common/heroswill/heroswill.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Ark_FloranHerosWill_01">
+      <header>
+        <div>
+          <div class="eyebrow">#02 manual_review_candidate / score 96</div>
+          <h2>Ark / 雷普勇士的意志</h2>
+          <code>Skill_Ark_FloranHerosWill_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/ark/Ark_FloranHerosWill_01.png?v=c2ef27eea1df" data-preview-frames="12" data-preview-width="380" data-preview-height="240" data-preview-cols="12" data-preview-rows="1" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/flora/ark/floranheroswill_sd/floranheroswill.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="02_Ark_Ark_FloranHerosWill_01.png?v=2c37f0040b7c" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/common/heroswill/heroswill.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_BowMaster_SoulArrowBow_01">
+      <header>
+        <div>
+          <div class="eyebrow">#03 weak_candidate / score 84</div>
+          <h2>BowMaster / 無形之箭</h2>
+          <code>Skill_BowMaster_SoulArrowBow_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/bowmaster/BowMaster_SoulArrowBow_01.png?v=e631892ba555" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,90"></div>
+          <p><code>assets/bundleresources/character/skill/default/soularrowbow_sd/soularrowbow.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="03_BowMaster_BowMaster_SoulArrowBow_01.png?v=7e04b449a8cc" data-preview-frames="16" data-preview-width="380" data-preview-height="240" data-preview-cols="16" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/bowman/arrowblow/arrowblow.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/arrowblow_sd/arrowblow.prefab | assets/bundleresources/character/skill/default/arrowblow_sd/arrowblow_hit.prefab | assets/bundleresources/character/skill/default/arrowblow_sd/arrowblow_ball.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Cannoneer_PirateSpirit_01">
+      <header>
+        <div>
+          <div class="eyebrow">#04 weak_candidate / score 71</div>
+          <h2>Cannoneer / 百烈精神</h2>
+          <code>Skill_Cannoneer_PirateSpirit_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/cannoneer/Cannoneer_PirateSpirit_01.png?v=bc6d1d5b107a" data-preview-frames="19" data-preview-width="380" data-preview-height="240" data-preview-cols="19" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90"></div>
+          <p><code>assets/bundleresources/character/skill/explorers/cannoneer/piratespirit_sd/piratespirit.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="04_Cannoneer_Cannoneer_PirateSpirit_01.png?v=618c0c232e36" data-preview-frames="32" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/pirate/pirateleap/pirateleap_buccaneer.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/remaster/pirate/pirateleap_sd/pirateleap_buccaneer_special.prefab | assets/bundleresources/character/skill/remaster/pirate/pirateleap_sd/pirateleap_captain_special.prefab | assets/bundleresources/character/skill/remaster/pirate/pirateleap_sd/pirateleap_buccaneer.prefab | assets/bundleresources/character/skill/remaster/pirate/pirateleap_sd/pirateleap_captain.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Hayato_HerosWill_01">
+      <header>
+        <div>
+          <div class="eyebrow">#05 strong_candidate / score 108</div>
+          <h2>Hayato / 曉月櫻花</h2>
+          <code>Skill_Hayato_HerosWill_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/hayato/Hayato_HerosWill_01.png?v=6a2474fc3568" data-preview-frames="21" data-preview-width="380" data-preview-height="240" data-preview-cols="21" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,90,90,90,90,90,90"></div>
+          <p><code>assets/bundleresources/character/skill/sengoku/hayato/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="05_Hayato_Hayato_HerosWill_01.png?v=2c37f0040b7c" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/common/heroswill/heroswill.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Hayato_SuddenStrike_01">
+      <header>
+        <div>
+          <div class="eyebrow">#06 weak_candidate / score 79</div>
+          <h2>Hayato / 瞬殺斬 (破裂)</h2>
+          <code>Skill_Hayato_SuddenStrike_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/hayato/Hayato_SuddenStrike_01.png?v=4cf114a44530" data-preview-frames="21" data-preview-width="380" data-preview-height="240" data-preview-cols="21" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/sengoku/hayato/suddenstrike_sd/suddenstrike.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="06_Hayato_Hayato_SuddenStrike_01.png?v=a044bf31390e" data-preview-frames="35" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="2" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/default/suddenraid_new/suddenraid_new.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/suddenraid_new_sd/suddenraid_new.prefab | assets/bundleresources/character/skill/default/suddenraid_new_sd/suddenraid_new_tile.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_HoYoung_AnimaHerosWill_01">
+      <header>
+        <div>
+          <div class="eyebrow">#07 manual_review_candidate / score 96</div>
+          <h2>HoYoung / 阿尼瑪勇士的意志</h2>
+          <code>Skill_HoYoung_AnimaHerosWill_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/hoyoung/HoYoung_AnimaHerosWill_01.png?v=e9ac6dd1a416" data-preview-frames="11" data-preview-width="380" data-preview-height="240" data-preview-cols="11" data-preview-rows="1" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/anima/hoyoung/animaheroswill_sd/animaheroswill.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="07_HoYoung_HoYoung_AnimaHerosWill_01.png?v=2c37f0040b7c" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/common/heroswill/heroswill.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Kanna_HerosWill_01">
+      <header>
+        <div>
+          <div class="eyebrow">#08 strong_candidate / score 108</div>
+          <h2>Kanna / 曉月櫻花</h2>
+          <code>Skill_Kanna_HerosWill_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/kanna/Kanna_HerosWill_01.png?v=5c1b4c2115ae" data-preview-frames="20" data-preview-width="380" data-preview-height="240" data-preview-cols="20" data-preview-rows="1" data-preview-durations="60,60,60,60,60,60,60,90,90,90,90,120,120,120,90,90,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/sengoku/kanna/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="08_Kanna_Kanna_HerosWill_01.png?v=2c37f0040b7c" data-preview-frames="13" data-preview-width="380" data-preview-height="240" data-preview-cols="13" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/common/heroswill/heroswill.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/heroswill_sd/heroswill.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_Lynn_SuddenStrike_01">
+      <header>
+        <div>
+          <div class="eyebrow">#09 weak_candidate / score 79</div>
+          <h2>Lynn / 急襲</h2>
+          <code>Skill_Lynn_SuddenStrike_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/lynn/Lynn_SuddenStrike_01.png?v=2e02d0779a47" data-preview-frames="51" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="2" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60,35,35,35,35,35,35,35,35,35,35,35,35,35,180,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/lynn/suddenstrike_sd/suddenstrike_01.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="09_Lynn_Lynn_SuddenStrike_01.png?v=a044bf31390e" data-preview-frames="35" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="2" data-preview-durations="60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60"></div>
+          <p><code>assets/bundleresources/character/skill/default/suddenraid_new/suddenraid_new.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/suddenraid_new_sd/suddenraid_new.prefab | assets/bundleresources/character/skill/default/suddenraid_new_sd/suddenraid_new_tile.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+
+    <article class="review-card" data-key="Skill_NightLord_DarkSerenity_01">
+      <header>
+        <div>
+          <div class="eyebrow">#10 weak_candidate / score 74</div>
+          <h2>NightLord / 黑暗能量</h2>
+          <code>Skill_NightLord_DarkSerenity_01</code>
+        </div>
+        <div class="actions">
+          <button data-vote="replace">可換</button>
+          <button data-vote="reject">不換</button>
+          <button data-vote="unsure">不確定</button>
+        </div>
+      </header>
+      <div class="grid">
+        <section>
+          <h3>目前網站動畫</h3>
+          <div class="stage" data-preview-src="../../animations/nightlord/NightLord_DarkSerenity_01.png?v=615656a10af3" data-preview-frames="15" data-preview-width="380" data-preview-height="240" data-preview-cols="15" data-preview-rows="1" data-preview-durations="120,120,120,120,120,120,120,120,120,120,120,120,120,120,120"></div>
+          <p><code>assets/bundleresources/character/skill/default/darkserenity_sd/darkserenity_effect.prefab</code></p>
+        </section>
+        <section>
+          <h3>候選動畫</h3>
+          <div class="stage" data-preview-src="10_NightLord_NightLord_DarkSerenity_01.png?v=bd550e5a17aa" data-preview-frames="4" data-preview-width="380" data-preview-height="240" data-preview-cols="4" data-preview-rows="1" data-preview-durations="35,35,35,35"></div>
+          <p><code>assets/bundleresources/character/skill/remaster/thief/darksight/darksight.prefab</code></p>
+          <p class="meta">Rendered from: <code>assets/bundleresources/character/skill/default/darksight_sd/darksight_effect.prefab</code></p>
+        </section>
+      </div>
+      <label class="note-label">備註
+        <textarea placeholder="例如：候選是同一招新版、候選錯招、目前比較像遊戲內..."></textarea>
+      </label>
+    </article>
+
+  </main>
+  <script>
+    const storageKey = "maplestorym-animation-review-v1";
+    const state = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    const cards = [...document.querySelectorAll(".review-card")];
+
+    function frameMs(stage, index) {
+      const durations = (stage.dataset.previewDurations || "").split(",").map(x => Number(x)).filter(Boolean);
+      return durations[index] || 90;
+    }
+
+    function renderFrame(stage, frame) {
+      const cols = Number(stage.dataset.previewCols || 1);
+      const rows = Number(stage.dataset.previewRows || 1);
+      const col = frame % cols;
+      const row = Math.floor(frame / cols);
+      stage.style.backgroundImage = `url("${stage.dataset.previewSrc}")`;
+      stage.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
+      stage.style.backgroundPositionX = cols <= 1 ? "0%" : `${(col / (cols - 1)) * 100}%`;
+      stage.style.backgroundPositionY = rows <= 1 ? "0%" : `${(row / (rows - 1)) * 100}%`;
+    }
+
+    function animate(stage) {
+      const frames = Math.max(1, Number(stage.dataset.previewFrames || 1));
+      let frame = 0;
+      const tick = () => {
+        renderFrame(stage, frame);
+        const delay = frameMs(stage, frame);
+        frame = (frame + 1) % frames;
+        stage._timer = window.setTimeout(tick, delay);
+      };
+      tick();
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(state, null, 2));
+    }
+
+    function applyState(card) {
+      const key = card.dataset.key;
+      const row = state[key] || {};
+      card.querySelectorAll("[data-vote]").forEach(btn => btn.classList.toggle("is-active", row.vote === btn.dataset.vote));
+      card.querySelector("textarea").value = row.note || "";
+    }
+
+    document.querySelectorAll(".stage").forEach(animate);
+    cards.forEach(card => {
+      applyState(card);
+      const key = card.dataset.key;
+      card.querySelectorAll("[data-vote]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state[key] = state[key] || {};
+          state[key].vote = btn.dataset.vote;
+          state[key].title = card.querySelector("h2").textContent.trim();
+          state[key].code = key;
+          state[key].note = card.querySelector("textarea").value;
+          save();
+          applyState(card);
+        });
+      });
+      card.querySelector("textarea").addEventListener("input", event => {
+        state[key] = state[key] || {};
+        state[key].note = event.target.value;
+        state[key].title = card.querySelector("h2").textContent.trim();
+        state[key].code = key;
+        save();
+      });
+    });
+
+    let active = 0;
+    function scrollToCard(delta) {
+      active = Math.max(0, Math.min(cards.length - 1, active + delta));
+      cards[active].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    document.getElementById("prev").addEventListener("click", () => scrollToCard(-1));
+    document.getElementById("next").addEventListener("click", () => scrollToCard(1));
+    document.getElementById("export").addEventListener("click", () => {
+      const box = document.getElementById("export-box");
+      box.textContent = JSON.stringify(state, null, 2);
+      box.style.display = "block";
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    document.getElementById("clear").addEventListener("click", () => {
+      if (!confirm("清除這頁全部判斷？")) return;
+      localStorage.removeItem(storageKey);
+      location.reload();
+    });
+  </script>
+</body>
+</html>
