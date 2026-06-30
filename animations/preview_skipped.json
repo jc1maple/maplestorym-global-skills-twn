@@ -1,0 +1,882 @@
+[
+  {
+    "job_code": "Adele",
+    "skill_code": "Skill_Adele_Maestro_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "AngelicBuster",
+    "skill_code": "Skill_AngelicBuster_GrandFinale_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "AngelicBuster",
+    "skill_code": "Skill_AngelicBuster_NovaTemperance_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Aran",
+    "skill_code": "Skill_Aran_EndGame_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Aran",
+    "skill_code": "Skill_Aran_Fave_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Aran",
+    "skill_code": "Skill_Aran_HerosOath_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Aran",
+    "skill_code": "Skill_Aran_PoleArmAcceleration_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Aran",
+    "skill_code": "Skill_Aran_SwiftMove_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "ArchMageFP",
+    "skill_code": "Skill_ArchMageFP_InfernalVenom_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "ArchMageIL",
+    "skill_code": "Skill_ArchMageIL_FrozenLightning_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Ark",
+    "skill_code": "Skill_Ark_AncientAbyss_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "BattleMage",
+    "skill_code": "Skill_BattleMage_CrimsonPactum_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Bishop",
+    "skill_code": "Skill_Bishop_HolyAdvent_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Blaster",
+    "skill_code": "Skill_Blaster_FinalDestroyer_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Blaster",
+    "skill_code": "Skill_Blaster_ForLiberty_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Blaster",
+    "skill_code": "Skill_Blaster_SecretAssembly_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "BowMaster",
+    "skill_code": "Skill_BowMaster_AscendantShade_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Buccaneer",
+    "skill_code": "Skill_Buccaneer_EpicAdventure_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Buccaneer",
+    "skill_code": "Skill_Buccaneer_LiberateNeptunes_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Buccaneer",
+    "skill_code": "Skill_Buccaneer_OffenseForm_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Cadena",
+    "skill_code": "Skill_Cadena_ChainArtsMassacre_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Cannoneer",
+    "skill_code": "Skill_Cannoneer_EpicAdventure_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Cannoneer",
+    "skill_code": "Skill_Cannoneer_SuperCannonExplosion_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Captain",
+    "skill_code": "Skill_Captain_Dreadnought_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DarkKnight",
+    "skill_code": "Skill_DarkKnight_DeadSpace_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DemonAvenger",
+    "skill_code": "Skill_DemonAvenger_DarkWinds_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DemonAvenger",
+    "skill_code": "Skill_DemonAvenger_DemonicFortitude_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DemonAvenger",
+    "skill_code": "Skill_DemonAvenger_Requiem_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DemonAvenger",
+    "skill_code": "Skill_DemonSlayer_DarkWinds_ChangeEffect_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DemonSlayer",
+    "skill_code": "Skill_DemonSlayer_Nightmare_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DualBlade",
+    "skill_code": "Skill_DualBlade_KarmaBlade_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "DualBlade",
+    "skill_code": "Skill_DualBlade_Karma_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Erel",
+    "skill_code": "Skill_Erel_FallofMellin_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Erel",
+    "skill_code": "Skill_Erel_Link_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "EunWol",
+    "skill_code": "Skill_EunWol_AdventoftheFoxGod_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "EunWol",
+    "skill_code": "Skill_EunWol_MissingYou_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_AdvancedDragonSpark_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_BlessingoftheOnyx_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DarkFog_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DragonBreath_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DragonDive_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DragonFlash_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DragonMaster_01_Riding",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_DragonSpark_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_EarthBreath_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_EarthCircle_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_EarthDive_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ElementalDecrease_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_EnhancedMagicDebris_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_HeroicMemories_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_MagicDebris_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_MagicGuard_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ManaBurst1_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ReturnDive_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ReturnFlame_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ReturnFlash_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_Return_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_SummonOnyxDragon_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_SupportJump_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ThunderCircle_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ThunderDive_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ThunderFlash_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_WindBreath_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_WindCircle_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_WindFlash_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Evan",
+    "skill_code": "Skill_Evan_ZodiacBurst_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "FlameWizard",
+    "skill_code": "Skill_FlameWizard_Eternity_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Hayato",
+    "skill_code": "Skill_Hayato_JinQuickDraw_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Hayato",
+    "skill_code": "Skill_Hayato_QuickDraw_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Hero",
+    "skill_code": "Skill_Hero_ComboSynergy_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Hero",
+    "skill_code": "Skill_Hero_SpiritCalibur_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "HoYoung",
+    "skill_code": "Skill_HoYoung_SageApotheosis_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Iel",
+    "skill_code": "Skill_Iel_Link_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Kain",
+    "skill_code": "Skill_Kain_Annihilation_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Kaiser",
+    "skill_code": "Skill_Kaiser_MightofNova_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Kanna",
+    "skill_code": "Skill_Kanna_HakumenkonmouJuubi_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Kinesis",
+    "skill_code": "Skill_Kinesis_AnotherRealm_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_AbyssalDrop_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_Apocalypse_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_ArcanePitch_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_Armageddon_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_BlackBlessing_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_BlindingPillar_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_DarkCrescendo_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_DeathScythe_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_DuskGuard_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_Ender_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_Equalize_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_FlashShower_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_HarmonicParadox_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_HeroicMemories_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_LightSpeed_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_LightranceformingBoost_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_MoonlightSpear_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_PhoticMeditation_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_PressureVoid_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_RayofRedemption_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_Reflection_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_ShadowShell_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_SpectralLight_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Luminous",
+    "skill_code": "Skill_Luminous_SylvanLance_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Lynn",
+    "skill_code": "Skill_Lynn_Companions_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Lynn",
+    "skill_code": "Skill_Lynn_SourceFlow_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "MarksMan",
+    "skill_code": "Skill_MarksMan_FinalAim_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mechanic",
+    "skill_code": "Skill_Mechanic_ForLiberty_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mechanic",
+    "skill_code": "Skill_Mechanic_GroundZero_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mechanic",
+    "skill_code": "Skill_Mechanic_SecretAssembly_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_AdvancedFinalAttack_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_AerialBarrage_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_AncientWarding_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_DualBowgunAcceleration_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_ElementalKnights_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_ElvishBlessing_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_GlideBlast_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_GustDive_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_HeroicMemories_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_IgnisRoar_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_IshtarsRing_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_LeapTornado_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_LightningEdge_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_PartingShot_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_PiercingStorm_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_RisingRush_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_RollingMoonsault_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_SpikesRoyale_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_SpiritNimbleFlight_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_StaggeringStrikes_01_Passive",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_StunningStrikes_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_SwiftDualShot_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_UnfadingGlory_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_UnicornSpike_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_Updraft_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_WaterShield_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Mercedes",
+    "skill_code": "Skill_Mercedes_WrathofEnlil_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "NightLord",
+    "skill_code": "Skill_NightLord_LifeAndDeath_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "NightWalker",
+    "skill_code": "Skill_NightWalker_Dominion_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "NightWalker",
+    "skill_code": "Skill_NightWalker_Silence_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Paladin",
+    "skill_code": "Skill_Paladin_SacredBastion_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Pathfinder",
+    "skill_code": "Skill_Pathfinder_ForsakenRelic_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Pathfinder",
+    "skill_code": "Skill_Pathfinder_ShadowRaven_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_BadLuckWard_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_Blason_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_CallingCard_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_CaneAcceleration_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_CarteRoseFinale_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_DefyingFate_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_DoubleEntendre_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_FinalFeint_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_HeroicMemories_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_JudgmentDraw_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_MilleAiguilles_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_MilleCartes_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_MistMask_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_Penombre_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_PhantomSwiftness_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_PriereDAria_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_RapierWit_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_ShroudWalk_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_StealSkill_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_Tempest_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_ToTheSkies_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Phantom",
+    "skill_code": "Skill_Phantom_VolDAme_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Shadower",
+    "skill_code": "Skill_Shadower_HalveCut_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Sia",
+    "skill_code": "Skill_Sia_PrimalAsterism_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "SoulMaster",
+    "skill_code": "Skill_SoulMaster_AstralBlitz_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Striker",
+    "skill_code": "Skill_Striker_SeaWave_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Striker",
+    "skill_code": "Skill_Striker_ThunderWallSeaWave_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Striker",
+    "skill_code": "Skill_Striker_Thunder_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_AdvancedFinalAttack_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_Backstep_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_ForLiberty_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_NaturesBelief_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_SecretAssembly_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WildHunter",
+    "skill_code": "Skill_WildHunter_SoulArrowCrossbow_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "WindBreaker",
+    "skill_code": "Skill_WindBreaker_MistralSpring_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  },
+  {
+    "job_code": "Xenon",
+    "skill_code": "Skill_Xenon_ArtificialEvolution_01",
+    "reason": "no supported EzPackedSprite ordinary atlas"
+  }
+]

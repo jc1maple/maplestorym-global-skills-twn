@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visitor Logs</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f8;
+      --panel: #fff;
+      --text: #1d2935;
+      --muted: #637083;
+      --line: #d9e0e7;
+      --accent: #116a5b;
+      --danger: #a13b2f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    main {
+      width: min(1180px, calc(100% - 28px));
+      margin: 28px auto 48px;
+    }
+    h1 { margin: 0 0 18px; font-size: 26px; }
+    h2 { margin: 0 0 12px; font-size: 17px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.2fr) minmax(180px, .8fr) 110px 112px;
+      gap: 10px;
+      align-items: end;
+    }
+    label { display: grid; gap: 5px; font-size: 13px; color: var(--muted); }
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 11px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+    button {
+      border: 1px solid #9fc8bf;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font: inherit;
+      font-weight: 650;
+      background: #e8f4f1;
+      color: var(--accent);
+      cursor: pointer;
+    }
+    .status { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .status.error { color: var(--danger); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      border-top: 1px solid var(--line);
+      padding: 7px 6px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th { color: var(--muted); font-weight: 700; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .visits { overflow-x: auto; }
+    .visits table { min-width: 1060px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    @media (max-width: 860px) {
+      .controls, .grid { grid-template-columns: 1fr; }
+      main { width: min(100% - 18px, 1180px); margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Visitor Logs</h1>
+    <section class="panel">
+      <div class="controls">
+        <label>
+          Worker URL
+          <input id="endpoint" placeholder="https://YOUR_WORKER.YOUR_SUBDOMAIN.workers.dev">
+        </label>
+        <label>
+          READ_TOKEN
+          <input id="token" type="password" autocomplete="off">
+        </label>
+        <label>
+          筆數
+          <input id="limit" type="number" min="1" max="500" value="100">
+        </label>
+        <button id="load">讀取</button>
+      </div>
+      <div id="status" class="status">輸入 Worker URL 和 READ_TOKEN 後讀取。Token 只存在這個瀏覽器的 sessionStorage。</div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>每日</h2>
+        <div id="days"></div>
+      </div>
+      <div class="panel">
+        <h2>頁面</h2>
+        <div id="paths"></div>
+      </div>
+      <div class="panel">
+        <h2>國家</h2>
+        <div id="countries"></div>
+      </div>
+    </section>
+
+    <section class="panel visits">
+      <h2>最近訪問</h2>
+      <div id="visits"></div>
+    </section>
+  </main>
+
+  <script src="../../visitor-logger-config.js"></script>
+  <script>
+    const endpointInput = document.getElementById("endpoint");
+    const tokenInput = document.getElementById("token");
+    const limitInput = document.getElementById("limit");
+    const loadButton = document.getElementById("load");
+    const statusEl = document.getElementById("status");
+    const defaultEndpoint = window.MSM_VISITOR_LOG_ENDPOINT || "";
+    endpointInput.value = localStorage.getItem("msm_logger_endpoint") || defaultEndpoint;
+    tokenInput.value = sessionStorage.getItem("msm_logger_token") || "";
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[char]));
+    }
+
+    function workerBase() {
+      const raw = endpointInput.value.trim();
+      try {
+        const url = new URL(raw);
+        url.hash = "";
+        url.search = "";
+        let pathname = url.pathname.replace(/\/+$/, "");
+        for (const suffix of ["/collect", "/admin/visits", "/admin/summary", "/health"]) {
+          if (pathname.endsWith(suffix)) {
+            pathname = pathname.slice(0, -suffix.length);
+          }
+        }
+        url.pathname = pathname || "/";
+        return url.toString().replace(/\/+$/, "");
+      } catch (_) {
+        return raw.replace(/\/+$/, "");
+      }
+    }
+
+    function status(text, isError = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("error", isError);
+    }
+
+    async function getJson(path, label) {
+      status("讀取 " + label + "...");
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 12000);
+      let response;
+      try {
+        response = await fetch(workerBase() + path, {
+          mode: "cors",
+          cache: "no-store",
+          credentials: "omit",
+          signal: controller.signal,
+          headers: { authorization: "Bearer " + tokenInput.value.trim() },
+        });
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(label + " 請求逾時，請確認 Worker URL 是否正確。");
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timer);
+      }
+      try {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || response.statusText);
+        return data;
+      } catch (error) {
+        if (!response.ok) throw error;
+        throw new Error(label + " 回傳格式錯誤。");
+      }
+    }
+
+    function table(rows, columns) {
+      if (!rows || !rows.length) return '<p class="status">沒有資料</p>';
+      return '<table><thead><tr>' + columns.map((col) => '<th>' + esc(col.label) + '</th>').join("") +
+        '</tr></thead><tbody>' + rows.map((row) => '<tr>' + columns.map((col) => {
+          const value = typeof col.value === "function" ? col.value(row) : row[col.value];
+          return '<td class="' + (col.num ? "num" : "") + '">' + esc(value) + '</td>';
+        }).join("") + '</tr>').join("") + '</tbody></table>';
+    }
+
+    async function load() {
+      if (!workerBase() || !tokenInput.value.trim()) {
+        status("請先輸入 Worker URL 和 READ_TOKEN。", true);
+        return;
+      }
+      const base = workerBase();
+      endpointInput.value = base;
+      localStorage.setItem("msm_logger_endpoint", base);
+      sessionStorage.setItem("msm_logger_token", tokenInput.value.trim());
+      status("讀取中...");
+      loadButton.disabled = true;
+      try {
+        const limit = Math.max(1, Math.min(Number.parseInt(limitInput.value || "100", 10), 500));
+        const summary = await getJson("/admin/summary", "統計");
+        const visits = await getJson("/admin/visits?limit=" + limit, "最近訪問");
+        document.getElementById("days").innerHTML = table(summary.days, [
+          { label: "日期", value: "day" },
+          { label: "訪問", value: "visits", num: true },
+          { label: "IP", value: "unique_ips", num: true },
+        ]);
+        document.getElementById("paths").innerHTML = table(summary.paths, [
+          { label: "路徑", value: "path" },
+          { label: "訪問", value: "visits", num: true },
+          { label: "IP", value: "unique_ips", num: true },
+        ]);
+        document.getElementById("countries").innerHTML = table(summary.countries, [
+          { label: "國家", value: "country" },
+          { label: "訪問", value: "visits", num: true },
+          { label: "IP", value: "unique_ips", num: true },
+        ]);
+        document.getElementById("visits").innerHTML = table(visits.results, [
+          { label: "時間", value: "created_at" },
+          { label: "IP", value: "ip" },
+          { label: "國家", value: "country" },
+          { label: "頁面", value: "path" },
+          { label: "來源", value: "referrer" },
+          { label: "UA", value: (row) => row.user_agent },
+        ]);
+        status("完成。");
+      } catch (error) {
+        status("讀取失敗：" + error.message, true);
+      } finally {
+        loadButton.disabled = false;
+      }
+    }
+
+    loadButton.addEventListener("click", load);
+  </script>
+</body>
+</html>

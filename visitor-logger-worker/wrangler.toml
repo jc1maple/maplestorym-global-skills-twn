@@ -1,0 +1,12 @@
+name = "maplestorym-skills-visitor-logger"
+main = "src/worker.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://jc1maple.github.io,http://127.0.0.1:8770,http://localhost:8770"
+STORE_FULL_IP = "true"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "maplestorym_skills_visits"
+database_id = "8a74a317-da02-4d15-9f6c-0bfbfdab461f"
