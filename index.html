@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MapleStory M Global Skills TWN</title>
+  <title>楓之谷 M Global/TWN 技能資料庫</title>
   <style>
     :root {
       color-scheme: light;
@@ -581,18 +581,40 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="modern.css?v=20260805a">
+  <link rel="stylesheet" href="skill-configurator.css?v=20260808b">
 </head>
 <body class="stage-all-mode">
   <header class="page-header">
     <div class="wrap">
       <div class="title-row">
-        <div>
-          <h1>MapleStory M Global Skills TWN</h1>
+        <a class="site-brand" href="#top" aria-label="回到技能資料庫頂端">
+          <span class="brand-orb" aria-hidden="true"><span>MS</span></span>
+          <span class="brand-copy">
+            <span class="brand-kicker">MAPLESTORY M · GLOBAL / TWN</span>
+            <h1>技能資料庫</h1>
+          </span>
+        </a>
+        <div class="header-meta" aria-label="資料庫摘要">
+          <span><strong>5,793</strong> 筆技能</span>
+          <span><strong>49</strong> 個職業</span>
+          <button id="skill-config-open" class="skill-config-open" type="button">
+            <span aria-hidden="true">⌨</span> 技能配置
+          </button>
+          <button id="mobile-filter-toggle" class="mobile-filter-toggle" type="button" aria-expanded="false" aria-controls="filter-sidebar">
+            <span aria-hidden="true">☷</span> 篩選 <b id="active-filter-count">0</b>
+          </button>
         </div>
       </div>
       <div class="controls">
-        <input id="q" type="search" placeholder="搜尋職業、技能、核心代碼、描述">
-        <select id="job">
+        <label class="control-field search-field" for="q">
+          <span class="control-icon" aria-hidden="true"></span>
+          <input id="q" type="search" placeholder="搜尋技能、核心代碼或描述…" autocomplete="off">
+          <kbd>/</kbd>
+        </label>
+        <label class="control-field job-field" for="job">
+          <span class="control-label">職業</span>
+          <select id="job">
           <option value="SoulMaster" selected>聖魂劍士</option>
 <option value="WindBreaker">破風使者</option>
 <option value="NightWalker">暗夜行者</option>
@@ -640,19 +662,28 @@
 <option value="Lynn">琳恩</option>
 <option value="Iel">艾伊爾</option>
 <option value="Kain">凱殷</option>
-<option value="GenesisWeapon">GenesisWeapon</option>
+<option value="GenesisWeapon">創世武器</option>
 <option value="Lara">菈菈</option>
-<option value="">全部職業</option>
-        </select>
+          <option value="">全部職業</option>
+          </select>
+        </label>
       </div>
     </div>
   </header>
+  <span id="top" aria-hidden="true"></span>
+  <button id="filter-scrim" class="filter-scrim" type="button" aria-label="關閉篩選"></button>
   <main class="wrap content-shell">
-    <aside class="stage-sidebar">
-      <h2>篩選</h2>
+    <aside id="filter-sidebar" class="stage-sidebar">
+      <div class="filter-heading">
+        <div>
+          <span>FILTERS</span>
+          <h2>篩選條件</h2>
+        </div>
+        <button id="filter-close" class="filter-close" type="button" aria-label="關閉篩選">×</button>
+      </div>
       <div class="sidebar-actions">
-        <button id="reset-filters" class="reset-button" type="button">清除篩選，回到預設</button>
-        <button id="toggle-all-skills" class="reset-button" type="button">全部展開</button>
+        <button id="reset-filters" class="reset-button" type="button"><span aria-hidden="true">↺</span> 回到預設</button>
+        <button id="toggle-all-skills" class="reset-button" type="button"><span aria-hidden="true">↕</span> 全部展開</button>
       </div>
       <section class="filter-block">
         <h3>轉職階段</h3>
@@ -850,6 +881,48 @@
       </section>
     </aside>
     <div class="content-area">
+      <section class="job-showcase" aria-labelledby="showcase-job-name">
+        <div class="showcase-copy">
+          <span class="showcase-kicker">CURRENT CLASS DOSSIER</span>
+          <span id="showcase-code" class="showcase-code">SOULMASTER</span>
+          <h2 id="showcase-job-name">聖魂劍士</h2>
+          <p id="showcase-description">從基礎技能一路檢視至 HEXA 核心，所有資料均保留原始 Global/TWN 客戶端欄位。</p>
+          <div id="showcase-stats" class="showcase-stats" aria-label="目前職業技能統計">
+            <span><strong>70</strong><small>目前顯示</small></span>
+            <span><strong>116</strong><small>原始技能</small></span>
+            <span><strong>8</strong><small>技能階段</small></span>
+          </div>
+          <nav id="stage-shortcuts" class="stage-shortcuts" aria-label="快速前往技能階段"></nav>
+        </div>
+        <div class="showcase-visual" aria-hidden="true">
+          <span class="orbit orbit-a"></span>
+          <span class="orbit orbit-b"></span>
+          <span class="orbit-core"></span>
+          <div id="showcase-icons" class="showcase-icons"></div>
+          <span class="showcase-stamp">GLOBAL<br>TWN</span>
+        </div>
+      </section>
+      <div class="content-toolbar">
+        <div>
+          <span class="content-eyebrow">SKILL ARCHIVE</span>
+          <strong id="result-summary">聖魂劍士 · 70 個技能</strong>
+          <small id="result-detail">依轉職階段分組顯示，點擊卡片查看完整數值</small>
+        </div>
+        <div class="toolbar-actions">
+          <div class="view-switcher" aria-label="技能顯示方式">
+            <button id="view-grid" class="is-active" type="button" aria-pressed="true" title="卡片檢視">▦</button>
+            <button id="view-list" type="button" aria-pressed="false" title="精簡檢視">☷</button>
+          </div>
+          <button id="toolbar-filter-button" class="toolbar-filter-button" type="button">
+            <span aria-hidden="true">⌘</span> 進階篩選
+          </button>
+          <div class="type-legend" aria-label="技能型態圖例">
+            <span class="legend-active"><i></i>主動</span>
+            <span class="legend-buff"><i></i>Buff</span>
+            <span class="legend-passive"><i></i>被動</span>
+          </div>
+        </div>
+      </div>
       <div id="empty" class="empty">沒有符合條件的技能</div>
       
             <section class="job-section" data-job="SoulMaster" data-text="soulmaster 聖魂劍士 和光之精靈相伴的皇家騎士團的主要坦克！">
@@ -24851,7 +24924,7 @@ attackspeed: 啟用 magicbooster_evan" role="button" tabindex="0" aria-expanded=
 向上跳躍高度: 240 跳躍過程中，同時按壓上方向鍵和跳躍鍵，可和寶貝龍一起往上跳。
 向上跳躍高度: 240 blank" role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><img src="icons/Blank.png" alt="風之躍" loading="lazy"></div>
+          <div class="skill-icon is-source-blank" role="img" aria-label="風之躍：客戶端未提供技能圖示" title="Global/TWN 客戶端資料指定為空白圖示"><span class="icon-missing" aria-hidden="true">No</span></div>
           <div class="skill-title">
             <h3>風之躍</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Second / Passive / Open Lv 30 / MaxLv 5</div>
@@ -50273,7 +50346,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 惡魔之力增加量: 40% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DemonSlash-Fury.png" alt="惡魔狂斬 - 附加之力" loading="lazy"></div>
           <div class="skill-title">
             <h3>惡魔狂斬 - 附加之力</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50291,7 +50364,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 最終傷害增加: 20% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DemonSlash-Reinforce.png" alt="惡魔狂斬 - 強化" loading="lazy"></div>
           <div class="skill-title">
             <h3>惡魔狂斬 - 強化</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50327,7 +50400,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 物理攻擊力增加: 30% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DarkMetamorphosis-Enhance.png" alt="變形 - 提升" loading="lazy"></div>
           <div class="skill-title">
             <h3>變形 - 提升</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50345,7 +50418,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 最終傷害增加: 20% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DarkMetamorphosis-Reinforce.png" alt="變形 - 強化" loading="lazy"></div>
           <div class="skill-title">
             <h3>變形 - 強化</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50363,7 +50436,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 惡魔之力消耗量: 8 " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DarkMetamorphosis-ReduceFury.png" alt="變形 - 降低之力" loading="lazy"></div>
           <div class="skill-title">
             <h3>變形 - 降低之力</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50381,7 +50454,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 最終傷害增加: 20% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DemonImpact-Reinforce.png" alt="惡魔衝擊 - 強化" loading="lazy"></div>
           <div class="skill-title">
             <h3>惡魔衝擊 - 強化</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50399,7 +50472,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 打擊次數: 12 " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DemonImpact-ExtraStrike.png" alt="惡魔衝擊 - 攻擊加成" loading="lazy"></div>
           <div class="skill-title">
             <h3>惡魔衝擊 - 攻擊加成</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -50417,7 +50490,7 @@ buff時間: 120秒
 學習技能所需等級: 141
 惡魔之力消耗量: 4 " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><span class="icon-missing">No</span></div>
+          <div class="skill-icon" aria-hidden="true"><img src="icons/DemonImpact-ReduceFury.png" alt="惡魔衝擊 - 降低之力" loading="lazy"></div>
           <div class="skill-title">
             <h3>惡魔衝擊 - 降低之力</h3>
             <div class="skill-meta">技能樹 / 職業專屬 / Hyper / Passive / Open Lv 141 / MaxLv 1</div>
@@ -83999,9 +84072,9 @@ buff時間: 30秒
 技能傷害: 350%
 套用追加無視防禦率: 15%
 
-可在自動戰鬥時使用 &lt;missing:213109651:1&gt;" role="button" tabindex="0" aria-expanded="false">
+可在自動戰鬥時使用" role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/bowmaster/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/bowmaster/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><span class="icon-missing">&lt;m</span></div>
+          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/bowmaster/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/bowmaster/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><img src="icons/FuryoftheWild.png" alt="演變" loading="lazy"></div>
           <div class="skill-title">
             <h3>演變</h3>
             <div class="skill-meta">V 技能核心 / 系列共通 / VSkill / 1090 / Open Lv 200 / MaxLv 30 / CoreLv 30</div>
@@ -100633,9 +100706,9 @@ buff時間: 30秒
 技能傷害: 350%
 套用追加無視防禦率: 15%
 
-可在自動戰鬥時使用 &lt;missing:213109651:1&gt;" role="button" tabindex="0" aria-expanded="false">
+可在自動戰鬥時使用" role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/marksman/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/marksman/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><span class="icon-missing">&lt;m</span></div>
+          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/marksman/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/marksman/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><img src="icons/FuryoftheWild.png" alt="演變" loading="lazy"></div>
           <div class="skill-title">
             <h3>演變</h3>
             <div class="skill-meta">V 技能核心 / 系列共通 / VSkill / 1090 / Open Lv 200 / MaxLv 30 / CoreLv 30</div>
@@ -122196,7 +122269,7 @@ icbm套用追加無視防禦率且不會受傷害反射影響。用icbm召喚的
 污染地帶維持時間: 15秒
 套用追加無視防禦率: 15% " role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/cannoneer/Cannoneer_TheNuclearOption_01.png?v=31131a2b683b" data-preview-sources="animations/cannoneer/Cannoneer_TheNuclearOption_01.png?v=31131a2b683b" data-preview-kind="spritesheet" data-preview-frames="59" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="2" data-preview-durations="60,60,60,60,60,60,60,60,35,35,35,70,70,70,70,70,70,70,70,70,70,70,70,70,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect_01 &gt; Special_01 &gt; Hit_01 &gt; Hit_01 &gt; Ball_01 &gt; Tile_01"><span class="icon-missing">No</span></div>
+          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/cannoneer/Cannoneer_TheNuclearOption_01.png?v=31131a2b683b" data-preview-sources="animations/cannoneer/Cannoneer_TheNuclearOption_01.png?v=31131a2b683b" data-preview-kind="spritesheet" data-preview-frames="59" data-preview-width="380" data-preview-height="240" data-preview-cols="32" data-preview-rows="2" data-preview-durations="60,60,60,60,60,60,60,60,35,35,35,70,70,70,70,70,70,70,70,70,70,70,70,70,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect_01 &gt; Special_01 &gt; Hit_01 &gt; Hit_01 &gt; Ball_01 &gt; Tile_01"><img src="icons/TheNuclearOption.png" alt="ICBM" loading="lazy"></div>
           <div class="skill-title">
             <h3>ICBM</h3>
             <div class="skill-meta">HEXA 技能核心 / 職業專屬 / HexaCoreSkill / 59 / Open Lv 250 / MaxLv 30 / CoreLv 30</div>
@@ -124773,9 +124846,9 @@ buff時間: 30秒
 技能傷害: 350%
 套用追加無視防禦率: 15%
 
-可在自動戰鬥時使用 &lt;missing:213109651:1&gt;" role="button" tabindex="0" aria-expanded="false">
+可在自動戰鬥時使用" role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/pathfinder/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/pathfinder/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><span class="icon-missing">&lt;m</span></div>
+          <div class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="animations/pathfinder/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-sources="animations/pathfinder/V_FuryoftheWild_01.png?v=10545473d1d7" data-preview-kind="spritesheet" data-preview-frames="29" data-preview-width="380" data-preview-height="240" data-preview-cols="29" data-preview-rows="1" data-preview-durations="90,90,90,90,90,90,90,90,90,90,90,90,120,120,120,120,120,120,120,120,120,90,90,90,90,90,90,90,90" data-preview-format="EzPackedSprite sequence" data-preview-animation="Effect &gt; Effect &gt; Hit"><img src="icons/FuryoftheWild.png" alt="演變" loading="lazy"></div>
           <div class="skill-title">
             <h3>演變</h3>
             <div class="skill-meta">V 技能核心 / 系列共通 / VSkill / 1090 / Open Lv 200 / MaxLv 30 / CoreLv 30</div>
@@ -165413,10 +165486,10 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
                 
             </section>
             
-            <section class="job-section" data-job="GenesisWeapon" data-text="genesisweapon genesisweapon ">
+            <section class="job-section" data-job="GenesisWeapon" data-text="創世武器 genesisweapon ">
               <header class="job-header">
                 <div>
-                  <h2>GenesisWeapon</h2>
+                  <h2>創世武器</h2>
                 </div>
                 <span class="job-count">2 skills</span>
               </header>
@@ -168873,7 +168946,10 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
       <span id="skill-preview-kind" class="skill-preview-kind">動畫</span>
     </div>
   </div>
-  <footer class="site-footer">© 2026 jc1 · Powered by jc1</footer>
+  <footer class="site-footer">
+    <span class="footer-brand"><i aria-hidden="true"></i> MapleStory M Skill Archive</span>
+    <span>Global/TWN · © 2026 jc1</span>
+  </footer>
   <script src="visitor-logger-config.js"></script>
   <script src="visitor-logger.js" defer></script>
   <script>
@@ -168901,7 +168977,19 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     const previewTitle = document.getElementById('skill-preview-title');
     const previewKind = document.getElementById('skill-preview-kind');
     const previewIcons = Array.from(document.querySelectorAll('.skill-icon.has-preview'));
+    const sectionModels = sections.map(section => ({
+      element: section,
+      searchable: (section.dataset.text || '').toLowerCase(),
+      groups: Array.from(section.querySelectorAll('.stage-section')).map(group => ({
+        element: group,
+        cards: Array.from(group.querySelectorAll('.skill-card')),
+      })),
+    }));
+    const cardSearchText = new WeakMap();
     let pendingStableScroll = null;
+    let pendingFilterFrame = 0;
+    let pendingSearchTimer = 0;
+    let lastFilterSignature = '';
     let previewHoverTimer = null;
     let previewFrameTimer = null;
     let activePreviewIcon = null;
@@ -168950,11 +169038,18 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
 
     function setCardCollapsed(card, collapsed) {
       card.classList.toggle('is-collapsed', collapsed);
-      card.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      const titleToggle = card.querySelector('.skill-title[data-card-toggle]');
+      if (titleToggle) {
+        const skillName = titleToggle.querySelector('h3')?.textContent?.trim() || '技能';
+        titleToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        titleToggle.setAttribute('aria-label', (collapsed ? '展開 ' : '收起 ') + skillName + ' 詳細資料');
+        card.removeAttribute('aria-expanded');
+      } else {
+        card.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      }
     }
 
-    function updateBulkToggleLabel() {
-      const cards = visibleSkillCards();
+    function updateBulkToggleLabel(cards = visibleSkillCards()) {
       const hasExpanded = cards.some(card => !card.classList.contains('is-collapsed'));
       toggleAllSkills.textContent = hasExpanded ? '全部收起' : '全部展開';
     }
@@ -169051,6 +169146,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
 
     function showSkillPreview(icon) {
       const card = icon.closest('.skill-card');
+      if (icon.classList.contains('is-pinned')) return;
       if (!card || !icon.dataset.previewSrc || card.hidden || card.closest('.job-section')?.hidden || card.closest('.stage-section')?.hidden) return;
       clearPreviewTimers();
       activePreviewIcon = icon;
@@ -169094,6 +169190,10 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     }
 
     function scheduleSkillPreview(icon) {
+      if (icon.classList.contains('is-pinned')) {
+        hideSkillPreview();
+        return;
+      }
       clearPreviewTimers();
       previewHoverTimer = window.setTimeout(() => showSkillPreview(icon), 1000);
     }
@@ -169103,7 +169203,37 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
       return new Set(checks.filter(input => input.checked).map(input => input.value));
     }
 
-    function applyFilter() {
+    function cancelScheduledFilter() {
+      if (pendingSearchTimer) {
+        window.clearTimeout(pendingSearchTimer);
+        pendingSearchTimer = 0;
+      }
+      if (pendingFilterFrame) {
+        window.cancelAnimationFrame(pendingFilterFrame);
+        pendingFilterFrame = 0;
+      }
+    }
+
+    function scheduleFilter({ debounce = false } = {}) {
+      cancelScheduledFilter();
+      const queue = () => {
+        pendingFilterFrame = window.requestAnimationFrame(() => {
+          pendingFilterFrame = 0;
+          applyFilter();
+        });
+      };
+      if (debounce) {
+        pendingSearchTimer = window.setTimeout(() => {
+          pendingSearchTimer = 0;
+          queue();
+        }, 120);
+      } else {
+        queue();
+      }
+    }
+
+    function applyFilter({ force = false } = {}) {
+      cancelScheduledFilter();
       hideSkillPreview();
       const position = pendingStableScroll || currentScrollPosition();
       pendingStableScroll = null;
@@ -169114,39 +169244,76 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
       const types = selectedSet(typeAll, typeChecks);
       const cores = selectedSet(coreAll, coreChecks);
       const scopes = selectedSet(scopeAll, scopeChecks);
+      const filterSignature = JSON.stringify([
+        term,
+        selected,
+        stages ? [...stages].sort() : null,
+        types ? [...types].sort() : null,
+        cores ? [...cores].sort() : null,
+        scopes ? [...scopes].sort() : null,
+      ]);
+      if (!force && filterSignature === lastFilterSignature) {
+        restoreScrollPosition(position);
+        return;
+      }
+      lastFilterSignature = filterSignature;
       let visibleSections = 0;
-      for (const section of sections) {
+      const visibleCardElements = [];
+      const visibleSectionElements = [];
+      for (const model of sectionModels) {
+        const section = model.element;
         const jobMatch = !selected || section.dataset.job === selected;
+        if (!jobMatch) {
+          if (!section.hidden) section.hidden = true;
+          continue;
+        }
         let visibleCards = 0;
-        for (const group of section.querySelectorAll('.stage-section')) {
+        for (const groupModel of model.groups) {
+          const group = groupModel.element;
           let visibleInGroup = 0;
-          for (const card of group.querySelectorAll('.skill-card')) {
-            const text = (section.dataset.text + ' ' + card.dataset.text).toLowerCase();
+          for (const card of groupModel.cards) {
+            let text = cardSearchText.get(card);
+            if (text === undefined) {
+              text = `${model.searchable} ${(card.dataset.text || '').toLowerCase()}`;
+              cardSearchText.set(card, text);
+            }
             const stageMatch = !stages || stages.has(card.dataset.stage);
             const typeMatch = !types || types.has(card.dataset.type);
             const coreMatch = !cores || cores.has(card.dataset.core);
             const scopeMatch = !scopes || scopes.has(card.dataset.scope);
             const show = jobMatch && stageMatch && typeMatch && coreMatch && scopeMatch && (!term || text.includes(term));
-            card.hidden = !show;
+            if (card.hidden === show) card.hidden = !show;
             if (show) {
               visibleCards++;
               visibleInGroup++;
+              visibleCardElements.push(card);
             }
           }
-          group.hidden = visibleInGroup === 0;
+          const hideGroup = visibleInGroup === 0;
+          if (group.hidden !== hideGroup) group.hidden = hideGroup;
         }
-        section.hidden = visibleCards === 0;
-        if (visibleCards > 0) visibleSections++;
+        const hideSection = visibleCards === 0;
+        if (section.hidden !== hideSection) section.hidden = hideSection;
+        if (visibleCards > 0) {
+          visibleSections++;
+          visibleSectionElements.push(section);
+        }
       }
       empty.style.display = visibleSections ? 'none' : 'block';
-      updateBulkToggleLabel();
+      updateBulkToggleLabel(visibleCardElements);
       restoreScrollPosition(position);
+      document.dispatchEvent(new CustomEvent('skills:filter-applied', {
+        detail: {
+          visibleCards: visibleCardElements,
+          visibleJobs: visibleSectionElements,
+        },
+      }));
     }
 
     function bindGroup(allInput, checks) {
       allInput.addEventListener('change', () => {
         if (allInput.checked) checks.forEach(input => { input.checked = false; });
-        applyFilter();
+        scheduleFilter();
       });
       for (const input of checks) {
         input.addEventListener('change', () => {
@@ -169155,7 +169322,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
           } else {
             allInput.checked = true;
           }
-          applyFilter();
+          scheduleFilter();
         });
       }
     }
@@ -169193,11 +169360,15 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     window.addEventListener('scroll', hideSkillPreview, { passive: true });
     for (const card of skillCards) {
       card.addEventListener('mousedown', event => {
-        if (event.button === 0) {
+        const target = event.target instanceof Element ? event.target : null;
+        const allowsSelection = target?.closest('.skill-desc, [data-card-toggle]');
+        if (event.button === 0 && !allowsSelection) {
           event.preventDefault();
         }
       });
-      card.addEventListener('click', () => {
+      card.addEventListener('click', event => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (target?.closest('.skill-desc')) return;
         keepScrollStable(() => {
           setCardCollapsed(card, !card.classList.contains('is-collapsed'));
           updateBulkToggleLabel();
@@ -169236,14 +169407,16 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
       for (const input of scopeChecks) {
         input.checked = defaultScopeValues.has(input.value);
       }
-      applyFilter();
+      applyFilter({ force: true });
     });
-    q.addEventListener('input', applyFilter);
-    job.addEventListener('change', applyFilter);
+    q.addEventListener('input', () => scheduleFilter({ debounce: true }));
+    job.addEventListener('change', () => scheduleFilter());
     if (defaultJobCode && !job.value) {
       job.value = defaultJobCode;
     }
-    applyFilter();
+    applyFilter({ force: true });
   </script>
+  <script src="modern-ui.js?v=20260803f" defer></script>
+  <script src="skill-configurator.js?v=20260808b" defer></script>
 </body>
 </html>

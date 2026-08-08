@@ -1,6 +1,6 @@
-# Visitor Logger Worker
+# Visitor Logger and Skill Recommendation Worker
 
-Cloudflare Worker + D1 backend for the MapleStory M skill site visitor log.
+Cloudflare Worker + D1 backend for the MapleStory M skill site's visitor log, player-submitted skill configurations, review queue, and published job defaults.
 
 The GitHub Pages site is static, so it cannot record visitor IPs by itself. This Worker receives the browser event, reads the real client IP from Cloudflare request headers, and writes the visit to D1.
 
@@ -20,10 +20,23 @@ npx wrangler@latest d1 create maplestorym_skills_visits
 
 Copy the returned `database_id` into `wrangler.toml`.
 
-3. Create the database schema:
+3. Create the database schema for a new database:
 
 ```powershell
 npx wrangler@latest d1 execute maplestorym_skills_visits --remote --file=./schema.sql
+```
+
+For an existing visitor-log database, apply only the skill recommendation migration:
+
+```powershell
+npx wrangler@latest d1 execute maplestorym_skills_visits --remote --file=./migrations/0002_skill_suggestions.sql
+```
+
+If skill recommendations are already installed, apply the idempotency migration
+before deploying this Worker version:
+
+```powershell
+npx wrangler@latest d1 execute maplestorym_skills_visits --remote --file=./migrations/0003_suggestion_idempotency.sql
 ```
 
 4. Set admin secrets:
@@ -53,5 +66,13 @@ Then rebuild/push the GitHub Pages site.
 - `GET /health` checks the Worker.
 - `GET /admin/visits?limit=100` returns recent visits. Requires `Authorization: Bearer <READ_TOKEN>`.
 - `GET /admin/summary` returns basic daily/path/country counts. Requires `Authorization: Bearer <READ_TOKEN>`.
+- `POST /skill-suggestions` stores one pending player configuration suggestion. Send a stable `Idempotency-Key` header when retrying the same submission; a replay returns the original suggestion instead of creating a duplicate.
+- `GET /skill-defaults?job_code=SoulMaster` returns the currently published default for a job.
+- `GET /admin/skill-suggestions?status=pending` lists suggestions. Follow `next_cursor` with the `cursor` query parameter to read more than one page. Requires `Authorization: Bearer <READ_TOKEN>`.
+- `GET /admin/skill-suggestions/:id` returns one complete configuration. Requires authorization.
+- `POST /admin/skill-suggestions/:id/review` approves or rejects a suggestion and can publish it as the job default. Rejecting the current default also unpublishes it. Requires authorization.
+- `GET /admin/skill-defaults` lists published defaults. Requires authorization.
+
+Open `../admin/skill-suggestions/index.html` to review submissions. The public endpoint only accepts new suggestions and reads published defaults; all review operations require the admin token.
 
 The Worker stores full IP by default because this project explicitly asks for IP logging. To avoid storing full IP, set `STORE_FULL_IP = "false"` in `wrangler.toml`; `ip_hash` will still be stored.

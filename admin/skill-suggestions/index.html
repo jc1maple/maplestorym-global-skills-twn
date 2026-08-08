@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>技能配置建議審核</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef1f4;
+      --panel: #fff;
+      --ink: #354354;
+      --muted: #728091;
+      --line: #d6dce2;
+      --bar: #46586f;
+      --blue: #5797c0;
+      --orange: #f57443;
+      --green: #26875f;
+      --red: #bd4059;
+    }
+    * { box-sizing: border-box; }
+    body { background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; }
+    button, input, select, textarea { font: inherit; }
+    .topbar { align-items: center; background: var(--bar); border-bottom: 6px solid #34465d; color: #fff; display: flex; gap: 14px; min-height: 74px; padding: 12px max(18px, calc((100vw - 1500px) / 2)); }
+    .topbar h1 { font-size: 21px; margin: 0; }
+    .topbar span { color: #d9e2eb; font-size: 12px; margin-left: auto; }
+    main { margin: 18px auto 40px; width: min(1500px, calc(100% - 28px)); }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 5px 20px rgba(35, 48, 63, .05); }
+    .controls { align-items: end; display: grid; gap: 10px; grid-template-columns: minmax(260px, 1.3fr) minmax(190px, .8fr) 150px 110px 90px; margin-bottom: 14px; padding: 14px; }
+    label { color: var(--muted); display: grid; font-size: 12px; font-weight: 700; gap: 5px; }
+    input, select, textarea { background: #fff; border: 1px solid #cbd3da; border-radius: 6px; color: var(--ink); padding: 9px 10px; width: 100%; }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(87, 151, 192, .14); outline: 0; }
+    button { background: #e9f2f7; border: 1px solid #b8d1df; border-radius: 6px; color: #376b88; cursor: pointer; font-weight: 750; padding: 9px 11px; }
+    button:hover { filter: brightness(.97); }
+    button:disabled { cursor: wait; opacity: .55; }
+    .layout { display: grid; gap: 14px; grid-template-columns: 330px minmax(0, 1fr); }
+    .sidebar { min-height: 600px; overflow: hidden; }
+    .side-head { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 13px 14px; }
+    .side-head h2, .detail-head h2 { font-size: 16px; margin: 0; }
+    .count { background: #edf1f4; border-radius: 999px; color: var(--muted); font-size: 11px; font-weight: 800; padding: 4px 8px; }
+    .suggestion-list { display: grid; max-height: 720px; overflow: auto; }
+    .load-more { border-radius: 0; border-width: 1px 0 0; display: block; width: 100%; }
+    .suggestion-item { background: #fff; border: 0; border-bottom: 1px solid #e4e8ec; border-radius: 0; color: var(--ink); display: grid; gap: 4px; padding: 12px 14px; text-align: left; }
+    .suggestion-item.is-active { background: #edf6fb; box-shadow: inset 4px 0 var(--blue); }
+    .suggestion-item strong { align-items: center; display: flex; font-size: 13px; gap: 6px; }
+    .suggestion-item span { color: var(--muted); font-size: 11px; }
+    .badge { border-radius: 999px; display: inline-flex; font-size: 10px; font-weight: 850; padding: 3px 7px; }
+    .badge.pending { background: #fff1df; color: #a25f12; }
+    .badge.approved { background: #e2f5ec; color: var(--green); }
+    .badge.rejected { background: #f9e6ea; color: var(--red); }
+    .badge.default { background: #e8e8ff; color: #5753a5; }
+    .detail { min-height: 600px; overflow: hidden; }
+    .empty { color: var(--muted); padding: 80px 20px; text-align: center; }
+    .detail-head { align-items: flex-start; background: #f7f8f9; border-bottom: 1px solid var(--line); display: flex; gap: 12px; justify-content: space-between; padding: 14px 16px; }
+    .detail-head p { color: var(--muted); font-size: 12px; margin: 5px 0 0; }
+    .detail-body { display: grid; gap: 14px; padding: 14px; }
+    .message { background: #eef5f9; border-left: 4px solid var(--blue); border-radius: 4px; color: #45586a; font-size: 13px; line-height: 1.55; margin: 0; padding: 10px 12px; white-space: pre-wrap; }
+    .job-guide { background: linear-gradient(135deg, #fff9f3, #fff); border: 1px solid #edc8b5; border-left: 5px solid var(--orange); border-radius: 8px; padding: 12px 14px; }
+    .job-guide h3 { color: #8e4b30; font-size: 14px; margin: 0 0 7px; }
+    .job-guide p { color: #554d49; font-size: 13px; line-height: 1.65; margin: 0; white-space: pre-wrap; }
+    .job-guide p.is-empty { color: var(--muted); font-style: italic; }
+    .config-section { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .config-title { align-items: center; background: #526478; color: #fff; display: flex; font-size: 13px; font-weight: 800; justify-content: space-between; padding: 9px 12px; }
+    .config-content { background: #f4f5f6; display: grid; gap: 10px; padding: 10px; }
+    .page-block h4, .combo-block h4 { color: #586575; font-size: 12px; margin: 0 0 7px; }
+    .slot-grid { display: grid; gap: 6px; grid-template-columns: repeat(8, minmax(70px, 1fr)); }
+    .slot-wrap { align-content: start; display: grid; gap: 5px; min-width: 0; }
+    .slot { align-items: center; background: #fff; border: 1px solid #d5dbe0; border-radius: 6px; display: grid; gap: 4px; min-height: 74px; padding: 5px; place-items: center; text-align: center; }
+    .slot.is-empty { background: #e3e5e7; color: #a2a8ae; }
+    .slot img { border: 1px solid #26313d; border-radius: 3px; height: 42px; image-rendering: pixelated; width: 42px; }
+    .slot b { color: #43505f; font-size: 10px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .slot small { background: #344357; border-radius: 3px; color: #fff; font-size: 9px; padding: 1px 4px; }
+    .slot-note { background: #fff7ed; border-left: 3px solid var(--orange); border-radius: 4px; color: #665248; font-size: 10px; line-height: 1.4; margin: 0; overflow-wrap: anywhere; padding: 5px 6px; white-space: pre-wrap; }
+    .slot-note strong { color: #a65331; display: block; font-size: 9px; margin-bottom: 2px; }
+    .combo-block { background: #fff; border: 1px solid #dde2e6; border-radius: 7px; display: grid; gap: 8px; grid-template-columns: 190px minmax(0, 1fr); padding: 9px; }
+    .combo-meta p { color: var(--muted); font-size: 11px; line-height: 1.45; margin: 0; white-space: pre-wrap; }
+    .review { background: #f8f8f8; border-top: 1px solid var(--line); display: grid; gap: 10px; padding: 14px; }
+    .review-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .approve { background: #e0f3e9; border-color: #a8d3bd; color: var(--green); }
+    .apply { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .reject { background: #f8e6ea; border-color: #e4b7c1; color: var(--red); }
+    .logout { background: #f4f5f6; border-color: #ccd3da; color: #596675; }
+    .status { color: var(--muted); font-size: 12px; margin: 0; min-height: 18px; }
+    .status.error { color: var(--red); }
+    @media (max-width: 980px) {
+      .controls, .layout { grid-template-columns: 1fr; }
+      .sidebar { min-height: 0; }
+      .suggestion-list { max-height: 280px; }
+      .slot-grid { grid-template-columns: repeat(4, minmax(65px, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      main { width: calc(100% - 14px); }
+      .combo-block { grid-template-columns: 1fr; }
+      .slot-grid { grid-template-columns: repeat(2, minmax(65px, 1fr)); }
+      .review-actions button { flex: 1 1 100%; }
+      .topbar span { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><h1>技能配置建議審核</h1><span>MapleStory M Global / TWN</span></header>
+  <main>
+    <section class="panel controls">
+      <label>Worker URL<input id="endpoint" placeholder="https://YOUR_WORKER.workers.dev"></label>
+      <label>管理 Token<input id="token" type="password" autocomplete="off"></label>
+      <label>狀態<select id="filter"><option value="pending">待審核</option><option value="approved">已核准</option><option value="rejected">已拒絕</option><option value="all">全部</option></select></label>
+      <button id="load" type="button">讀取建議</button>
+      <button class="logout" id="logout" type="button">登出</button>
+      <p class="status" id="status" style="grid-column:1/-1">Token 只保存在這個分頁的 sessionStorage。</p>
+    </section>
+
+    <div class="layout">
+      <aside class="panel sidebar">
+        <div class="side-head"><h2>玩家建議</h2><span class="count" id="count">0</span></div>
+        <div class="suggestion-list" id="list"><p class="empty">尚未讀取</p></div>
+        <button class="load-more" id="load-more" type="button" hidden>載入更多</button>
+      </aside>
+      <section class="panel detail" id="detail"><p class="empty">從左側選擇一份配置查看內容</p></section>
+    </div>
+  </main>
+
+  <script src="../../visitor-logger-config.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const endpointInput = document.getElementById('endpoint');
+      const tokenInput = document.getElementById('token');
+      const filterInput = document.getElementById('filter');
+      const loadButton = document.getElementById('load');
+      const logoutButton = document.getElementById('logout');
+      const loadMoreButton = document.getElementById('load-more');
+      const statusEl = document.getElementById('status');
+      const listEl = document.getElementById('list');
+      const detailEl = document.getElementById('detail');
+      const countEl = document.getElementById('count');
+      const MOBILE_TO_PC = [4, 5, 6, 1, 2, 3, 0, 7];
+      let suggestions = [];
+      let defaults = [];
+      let activeId = '';
+      let activeSuggestion = null;
+      let nextCursor = '';
+      let detailRequestVersion = 0;
+      let listRequestVersion = 0;
+
+      endpointInput.value = localStorage.getItem('msm_logger_endpoint') || window.MSM_SKILL_CONFIG_ENDPOINT || window.MSM_VISITOR_LOG_ENDPOINT || '';
+      tokenInput.value = sessionStorage.getItem('msm_logger_token') || '';
+
+      function workerBase() {
+        const raw = endpointInput.value.trim();
+        try {
+          const url = new URL(raw);
+          url.hash = '';
+          url.search = '';
+          url.pathname = url.pathname.replace(/\/(?:skill-suggestions|skill-defaults|admin\/skill-suggestions.*|admin\/skill-defaults)\/?$/, '') || '/';
+          return url.toString().replace(/\/+$/, '');
+        } catch (_) {
+          return raw.replace(/\/+$/, '');
+        }
+      }
+
+      function setStatus(text, error = false) {
+        statusEl.textContent = text;
+        statusEl.classList.toggle('error', error);
+      }
+
+      async function api(path, options = {}) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
+        try {
+          const response = await fetch(workerBase() + path, {
+            mode: 'cors', cache: 'no-store', credentials: 'omit',
+            ...options,
+            signal: controller.signal,
+            headers: {
+              authorization: 'Bearer ' + tokenInput.value.trim(),
+              ...(options.body ? { 'content-type': 'application/json' } : {}),
+              ...(options.headers || {})
+            }
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            const error = new Error(data.error || response.statusText || 'request_failed');
+            error.status = response.status;
+            throw error;
+          }
+          return data;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      function badge(text, className) {
+        const el = document.createElement('span');
+        el.className = 'badge ' + className;
+        el.textContent = text;
+        return el;
+      }
+
+      function statusLabel(value) {
+        return { pending: '待審核', approved: '已核准', rejected: '已拒絕' }[value] || value;
+      }
+
+      function isDefaultSuggestion(id) {
+        return defaults.some(item => item.suggestion_id === id);
+      }
+
+      function emptyMessage(text) {
+        const empty = document.createElement('p');
+        empty.className = 'empty';
+        empty.textContent = text;
+        return empty;
+      }
+
+      function clearAdminSession(message = '已登出，管理 Token 已從這個分頁清除。') {
+        sessionStorage.removeItem('msm_logger_token');
+        tokenInput.value = '';
+        suggestions = [];
+        defaults = [];
+        activeId = '';
+        activeSuggestion = null;
+        nextCursor = '';
+        detailRequestVersion += 1;
+        listRequestVersion += 1;
+        listEl.replaceChildren(emptyMessage('尚未讀取'));
+        detailEl.replaceChildren(emptyMessage('從左側選擇一份配置查看內容'));
+        countEl.textContent = '0';
+        loadMoreButton.hidden = true;
+        setStatus(message);
+        tokenInput.focus();
+      }
+
+      function handleUnauthorized(error) {
+        if (error?.status !== 401) return false;
+        clearAdminSession('登入已失效，管理 Token 已清除，請重新登入。');
+        return true;
+      }
+
+      function renderList() {
+        listEl.replaceChildren();
+        countEl.textContent = String(suggestions.length) + (nextCursor ? '+' : '');
+        loadMoreButton.hidden = !nextCursor;
+        if (!suggestions.length) {
+          listEl.append(emptyMessage('這個狀態目前沒有建議'));
+          return;
+        }
+        suggestions.forEach(item => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'suggestion-item' + (item.id === activeId ? ' is-active' : '');
+          const title = document.createElement('strong');
+          title.textContent = item.job_name;
+          title.append(' ', badge(statusLabel(item.status), item.status));
+          if (isDefaultSuggestion(item.id)) title.append(' ', badge('目前預設', 'default'));
+          const player = document.createElement('span');
+          player.textContent = `${item.submitter_name || '匿名玩家'}｜${new Date(item.created_at).toLocaleString('zh-TW')}`;
+          const note = document.createElement('span');
+          note.textContent = item.message || '沒有附加說明';
+          button.append(title, player, note);
+          button.addEventListener('click', () => loadDetail(item.id));
+          listEl.append(button);
+        });
+      }
+
+      function iconUrl(icon) {
+        if (!icon) return '';
+        try { return new URL('../../' + String(icon).replace(/^\.\//, ''), location.href).href; } catch (_) { return ''; }
+      }
+
+      function skillInfo(id, catalog) {
+        return id ? (catalog[id] || { name: id, icon: '' }) : null;
+      }
+
+      function slotElement(id, index, key, catalog, note) {
+        const info = skillInfo(id, catalog);
+        const wrap = document.createElement('div');
+        wrap.className = 'slot-wrap';
+        const slot = document.createElement('div');
+        slot.className = 'slot' + (info ? '' : ' is-empty');
+        if (key) {
+          const keyEl = document.createElement('small');
+          keyEl.textContent = key;
+          slot.append(keyEl);
+        }
+        if (info) {
+          const url = iconUrl(info.icon);
+          if (url) {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = '';
+            slot.append(img);
+          }
+          const name = document.createElement('b');
+          name.textContent = info.name;
+          name.title = info.name;
+          slot.append(name);
+        } else {
+          slot.append(String(index + 1));
+        }
+        wrap.append(slot);
+        if (typeof note === 'string' && note.trim()) {
+          const noteEl = document.createElement('p');
+          noteEl.className = 'slot-note';
+          const label = document.createElement('strong');
+          label.textContent = '使用註記';
+          noteEl.append(label, note.trim());
+          wrap.append(noteEl);
+        }
+        return wrap;
+      }
+
+      function slotsBlock(items, keys, catalog, notes) {
+        const grid = document.createElement('div');
+        grid.className = 'slot-grid';
+        items.forEach((id, index) => grid.append(slotElement(id, index, keys?.[index], catalog, notes?.[index])));
+        return grid;
+      }
+
+      function configSection(title) {
+        const section = document.createElement('section');
+        section.className = 'config-section';
+        const head = document.createElement('div');
+        head.className = 'config-title';
+        head.textContent = title;
+        const content = document.createElement('div');
+        content.className = 'config-content';
+        section.append(head, content);
+        return { section, content };
+      }
+
+      function pageBlock(title, items, keys, catalog, notes) {
+        const block = document.createElement('div');
+        block.className = 'page-block';
+        const heading = document.createElement('h4');
+        heading.textContent = title;
+        block.append(heading, slotsBlock(items, keys, catalog, notes));
+        return block;
+      }
+
+      function renderConfig(suggestion) {
+        const cfg = suggestion.config;
+        const catalog = suggestion.skill_catalog || {};
+        const fragment = document.createDocumentFragment();
+
+        const jobGuide = document.createElement('section');
+        jobGuide.className = 'job-guide';
+        const jobGuideTitle = document.createElement('h3');
+        jobGuideTitle.textContent = '職業爆發與整體玩法';
+        const jobGuideDescription = document.createElement('p');
+        const guideText = typeof cfg.jobGuide?.description === 'string' ? cfg.jobGuide.description.trim() : '';
+        jobGuideDescription.textContent = guideText || '沒有填寫';
+        jobGuideDescription.classList.toggle('is-empty', !guideText);
+        jobGuide.append(jobGuideTitle, jobGuideDescription);
+        fragment.append(jobGuide);
+
+        const mobile = configSection('技能按鍵 · 兩頁各 8 格');
+        cfg.mobilePages.forEach((items, page) => {
+          const keys = MOBILE_TO_PC.map((pcIndex, mobileIndex) => cfg.keys.pc?.[page]?.[pcIndex] || cfg.keys.mobile?.[mobileIndex] || '');
+          mobile.content.append(pageBlock(`頁面 ${page + 1}`, items, keys, catalog, cfg.slotNotes?.mobilePages?.[page]));
+        });
+        fragment.append(mobile.section);
+
+        const combo = configSection('組合技能 · 8 組 × 8 格');
+        cfg.combos.forEach((items, index) => {
+          const block = document.createElement('div');
+          block.className = 'combo-block';
+          const meta = document.createElement('div');
+          meta.className = 'combo-meta';
+          const heading = document.createElement('h4');
+          heading.textContent = `P${index + 1}｜${cfg.comboMeta[index]?.name || `${index + 1} 號自訂`}`;
+          const description = document.createElement('p');
+          description.textContent = cfg.comboMeta[index]?.description || '沒有配置說明';
+          meta.append(heading, description);
+          block.append(meta, slotsBlock(items, null, catalog));
+          combo.content.append(block);
+        });
+        fragment.append(combo.section);
+
+        const pc = configSection('PC 鍵盤配置');
+        cfg.pc.forEach((items, page) => pc.content.append(pageBlock(`技能快速欄位頁面 ${page + 1}`, items, cfg.keys.pc[page], catalog, cfg.slotNotes?.pc?.[page])));
+        pc.content.append(pageBlock('功能快捷欄位', cfg.functions, cfg.keys.functions, catalog, cfg.slotNotes?.functions));
+        fragment.append(pc.section);
+        return fragment;
+      }
+
+      function renderDetail(suggestion) {
+        detailEl.replaceChildren();
+        const head = document.createElement('header');
+        head.className = 'detail-head';
+        const titleWrap = document.createElement('div');
+        const title = document.createElement('h2');
+        title.textContent = suggestion.job_name;
+        const sub = document.createElement('p');
+        sub.textContent = `${suggestion.submitter_name || '匿名玩家'}｜${new Date(suggestion.created_at).toLocaleString('zh-TW')}｜${suggestion.id}`;
+        titleWrap.append(title, sub);
+        const badges = document.createElement('div');
+        badges.append(badge(statusLabel(suggestion.status), suggestion.status));
+        if (isDefaultSuggestion(suggestion.id)) badges.append(' ', badge('目前預設', 'default'));
+        head.append(titleWrap, badges);
+
+        const body = document.createElement('div');
+        body.className = 'detail-body';
+        const message = document.createElement('p');
+        message.className = 'message';
+        message.textContent = suggestion.message || '玩家沒有附加整體配置說明。';
+        body.append(message, renderConfig(suggestion));
+        detailEl.append(head, body);
+
+        const review = document.createElement('div');
+        review.className = 'review';
+        const label = document.createElement('label');
+        label.textContent = '管理備註';
+        const note = document.createElement('textarea');
+        note.rows = 3;
+        note.maxLength = 500;
+        note.placeholder = '可記錄核准／拒絕原因（玩家前台不會顯示）';
+        note.value = suggestion.admin_note || '';
+        label.append(note);
+        const actions = document.createElement('div');
+        actions.className = 'review-actions';
+        const approve = document.createElement('button');
+        approve.className = 'approve';
+        approve.textContent = '核准但不套用';
+        const apply = document.createElement('button');
+        apply.className = 'apply';
+        apply.textContent = '核准並設為職業預設';
+        const reject = document.createElement('button');
+        reject.className = 'reject';
+        reject.textContent = '拒絕建議';
+        reject.addEventListener('click', () => {
+          const warning = isDefaultSuggestion(suggestion.id)
+            ? `這份建議目前是「${suggestion.job_name}」的網站預設。拒絕後會同時下架這份預設，確定繼續？`
+            : '確定拒絕這份建議？';
+          if (confirm(warning)) reviewSuggestion(suggestion, 'reject', false, note.value, actions);
+        });
+        approve.addEventListener('click', () => reviewSuggestion(suggestion, 'approve', false, note.value, actions));
+        apply.addEventListener('click', () => {
+          if (confirm(`確定把這份配置設為「${suggestion.job_name}」的網站預設建議？`)) {
+            reviewSuggestion(suggestion, 'approve', true, note.value, actions);
+          }
+        });
+        actions.replaceChildren(reject, approve, apply);
+        review.append(label, actions);
+        detailEl.append(review);
+      }
+
+      async function loadDetail(id, options = {}) {
+        const requestVersion = ++detailRequestVersion;
+        activeId = id;
+        renderList();
+        if (options.showLoading !== false) detailEl.replaceChildren(emptyMessage('讀取配置中…'));
+        try {
+          const data = await api('/admin/skill-suggestions/' + encodeURIComponent(id));
+          if (requestVersion !== detailRequestVersion || activeId !== id) return false;
+          activeSuggestion = data.suggestion;
+          renderDetail(data.suggestion);
+          return true;
+        } catch (error) {
+          if (requestVersion !== detailRequestVersion || activeId !== id) return false;
+          if (options.throwOnFailure) throw error;
+          if (handleUnauthorized(error)) return false;
+          if (options.showLoading !== false) {
+            detailEl.replaceChildren(emptyMessage('讀取失敗：' + error.message));
+          }
+          return false;
+        }
+      }
+
+      function applyReviewResultLocally(suggestion, result, note) {
+        suggestion.status = result.status;
+        suggestion.admin_note = note.trim();
+        suggestion.reviewed_at = new Date().toISOString();
+        const summary = suggestions.find(item => item.id === suggestion.id);
+        if (summary) Object.assign(summary, {
+          status: result.status,
+          admin_note: suggestion.admin_note,
+          reviewed_at: suggestion.reviewed_at
+        });
+        if (result.applied_default) {
+          defaults = defaults.filter(item => item.job_code !== suggestion.job_code);
+          defaults.unshift({
+            job_code: suggestion.job_code,
+            job_name: suggestion.job_name,
+            suggestion_id: suggestion.id,
+            updated_at: suggestion.reviewed_at
+          });
+        } else if (result.unpublished_default) {
+          defaults = defaults.filter(item => item.suggestion_id !== suggestion.id);
+        }
+        activeSuggestion = suggestion;
+        renderList();
+        if (activeId === suggestion.id) renderDetail(suggestion);
+      }
+
+      async function reviewSuggestion(suggestion, decision, applyDefault, note, actions) {
+        [...actions.querySelectorAll('button')].forEach(button => button.disabled = true);
+        setStatus('更新審核結果中…');
+        let result;
+        try {
+          result = await api('/admin/skill-suggestions/' + encodeURIComponent(suggestion.id) + '/review', {
+            method: 'POST',
+            body: JSON.stringify({ decision, apply_default: applyDefault, admin_note: note })
+          });
+        } catch (error) {
+          if (handleUnauthorized(error)) return;
+          setStatus('審核失敗：' + error.message, true);
+          [...actions.querySelectorAll('button')].forEach(button => button.disabled = false);
+          return;
+        }
+
+        applyReviewResultLocally(suggestion, result, note);
+        const successMessage = result.unpublished_default
+          ? '已拒絕建議，並下架原本的職業預設。'
+          : applyDefault
+            ? '已核准並套用為職業預設。'
+            : decision === 'approve' ? '已核准建議。' : '已拒絕建議。';
+        setStatus(successMessage);
+
+        // The review POST is already committed. Refresh failures below must
+        // never be presented as if the review itself failed.
+        try {
+          await refreshListData(false, false);
+          if (activeId === suggestion.id) {
+            await loadDetail(suggestion.id, { showLoading: false, throwOnFailure: true });
+          }
+          setStatus(successMessage);
+        } catch (error) {
+          if (error?.status === 401) {
+            clearAdminSession(`${successMessage} 但登入已失效，管理 Token 已清除，請重新登入。`);
+            return;
+          }
+          setStatus(`${successMessage} 但重新整理失敗：${error.message}`, true);
+        }
+      }
+
+      async function refreshListData(resetDetail = true, append = false) {
+        const requestVersion = ++listRequestVersion;
+        const filter = filterInput.value;
+        const cursorQuery = append && nextCursor ? '&cursor=' + encodeURIComponent(nextCursor) : '';
+        const [listData, defaultsData] = await Promise.all([
+          api('/admin/skill-suggestions?status=' + encodeURIComponent(filter) + '&limit=200' + cursorQuery),
+          api('/admin/skill-defaults')
+        ]);
+        if (requestVersion !== listRequestVersion) return false;
+
+        if (append) {
+          const seen = new Set(suggestions.map(item => item.id));
+          suggestions.push(...(listData.results || []).filter(item => !seen.has(item.id)));
+        } else {
+          suggestions = listData.results || [];
+        }
+        nextCursor = listData.next_cursor || '';
+        defaults = defaultsData.results || [];
+        if (resetDetail) {
+          activeId = '';
+          activeSuggestion = null;
+          detailRequestVersion += 1;
+          detailEl.replaceChildren(emptyMessage('從左側選擇一份配置查看內容'));
+        }
+        renderList();
+        return true;
+      }
+
+      async function loadList(resetDetail = true, append = false) {
+        if (!workerBase() || !tokenInput.value.trim()) {
+          setStatus('請先輸入 Worker URL 與管理 Token。', true);
+          return;
+        }
+        const base = workerBase();
+        endpointInput.value = base;
+        localStorage.setItem('msm_logger_endpoint', base);
+        sessionStorage.setItem('msm_logger_token', tokenInput.value.trim());
+        (append ? loadMoreButton : loadButton).disabled = true;
+        setStatus(append ? '載入更多建議中…' : '讀取建議中…');
+        try {
+          await refreshListData(resetDetail, append);
+          setStatus(`完成，已載入 ${suggestions.length} 份${nextCursor ? '，尚有更多' : ''}。`);
+        } catch (error) {
+          if (handleUnauthorized(error)) return;
+          setStatus('讀取失敗：' + error.message, true);
+        } finally {
+          loadButton.disabled = false;
+          loadMoreButton.disabled = false;
+        }
+      }
+
+      loadButton.addEventListener('click', () => loadList(true));
+      loadMoreButton.addEventListener('click', () => loadList(false, true));
+      logoutButton.addEventListener('click', () => clearAdminSession());
+      filterInput.addEventListener('change', () => {
+        if (tokenInput.value.trim()) loadList(true);
+      });
+    })();
+  </script>
+</body>
+</html>
