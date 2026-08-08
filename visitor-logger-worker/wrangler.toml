@@ -3,7 +3,7 @@ main = "src/worker.js"
 compatibility_date = "2026-07-01"
 
 [vars]
-ALLOWED_ORIGINS = "https://jc1maple.github.io,http://127.0.0.1:8770,http://localhost:8770"
+ALLOWED_ORIGINS = "https://jc1maple.github.io,http://127.0.0.1:8765,http://localhost:8765,http://127.0.0.1:8770,http://localhost:8770"
 STORE_FULL_IP = "true"
 
 [[d1_databases]]

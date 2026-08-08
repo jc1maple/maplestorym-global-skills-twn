@@ -1,25 +1,3 @@
-CREATE TABLE IF NOT EXISTS visits (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-  ip TEXT,
-  ip_hash TEXT,
-  country TEXT,
-  colo TEXT,
-  path TEXT NOT NULL,
-  title TEXT,
-  referrer TEXT,
-  user_agent TEXT,
-  language TEXT,
-  timezone TEXT,
-  viewport TEXT,
-  screen TEXT,
-  session_id TEXT
-);
-
-CREATE INDEX IF NOT EXISTS idx_visits_created_at ON visits(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_visits_path ON visits(path);
-CREATE INDEX IF NOT EXISTS idx_visits_ip_hash ON visits(ip_hash);
-
 CREATE TABLE IF NOT EXISTS skill_suggestions (
   id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
@@ -33,8 +11,6 @@ CREATE TABLE IF NOT EXISTS skill_suggestions (
   catalog_json TEXT NOT NULL DEFAULT '{}',
   ip_hash TEXT,
   user_agent TEXT,
-  idempotency_key TEXT,
-  payload_hash TEXT,
   reviewed_at TEXT,
   admin_note TEXT
 );
@@ -45,11 +21,6 @@ CREATE INDEX IF NOT EXISTS idx_skill_suggestions_job
   ON skill_suggestions(job_code, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_skill_suggestions_ip_hash
   ON skill_suggestions(ip_hash, created_at DESC);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_skill_suggestions_idempotency_key
-  ON skill_suggestions(idempotency_key)
-  WHERE idempotency_key IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_skill_suggestions_status_page
-  ON skill_suggestions(status, created_at DESC, id DESC);
 
 CREATE TABLE IF NOT EXISTS skill_defaults (
   job_code TEXT PRIMARY KEY,
