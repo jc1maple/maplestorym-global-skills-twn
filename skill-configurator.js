@@ -45,11 +45,13 @@
     configRevisions: new Map(),
     publishedDefaults: new Map(),
     defaultRequests: new Map(),
+    defaultRequestVersions: new Map(),
     toastTimer: 0,
     metaSaveTimer: 0,
     noteSaveTimer: 0,
     workspaceRenderVersion: 0,
     submitting: false,
+    applyingPublishedDefault: false,
     returnFocus: null,
     submitReturnFocus: null,
     pageBackground: [],
@@ -94,6 +96,7 @@
         </aside>
       </div>
       <footer class="sc-footer">
+        <button class="sc-button is-suggestion" type="button" data-action="apply-default" title="以站長審核發布的配置覆蓋目前職業草稿">套用建議</button>
         <button class="sc-button is-danger" type="button" data-action="clear">清空目前</button>
         <button class="sc-button" type="button" data-action="save">儲存草稿</button>
         <button class="sc-button is-primary" type="button" data-action="submit">提交建議</button>
@@ -142,6 +145,7 @@
   const submitSummary = shell.querySelector('.sc-submit-summary');
   const submitError = shell.querySelector('.sc-submit-error');
   const submitConfirm = shell.querySelector('.sc-submit-confirm');
+  const applyDefaultButton = shell.querySelector('[data-action="apply-default"]');
   const clearButton = shell.querySelector('[data-action="clear"]');
 
   function normalizedHttpEndpoint(value) {
@@ -477,24 +481,56 @@
     return state.configs[job];
   }
 
+  async function requestPublishedDefault(jobCode) {
+    const requestVersion = (state.defaultRequestVersions.get(jobCode) || 0) + 1;
+    state.defaultRequestVersions.set(jobCode, requestVersion);
+    if (!CONFIG_ENDPOINT) return { ok: false, error: 'unavailable', requestVersion };
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(`${CONFIG_ENDPOINT}/skill-defaults?job_code=${encodeURIComponent(jobCode)}`, {
+        mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return { ok: false, error: data.error || 'request_failed', requestVersion };
+      if (!data.default?.config) return { ok: true, found: false, requestVersion };
+      const normalized = currentJobCode() === jobCode
+        ? normalizeConfig(data.default.config, makeGeneratedRecommendedConfig())
+        : cloneValue(data.default.config);
+      return {
+        ok: true,
+        found: true,
+        config: normalized,
+        suggestionId: String(data.default.suggestion_id || ''),
+        updatedAt: String(data.default.updated_at || ''),
+        requestVersion
+      };
+    } catch (error) {
+      return { ok: false, error: error?.name === 'AbortError' ? 'timeout' : 'network_error', requestVersion };
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+
+  function isLatestPublishedDefaultRequest(jobCode, result) {
+    return result?.requestVersion === state.defaultRequestVersions.get(jobCode);
+  }
+
   async function loadPublishedDefault(jobCode, applyWhenNoLocal = false, force = false) {
     if (!CONFIG_ENDPOINT) return false;
     if (!force && state.publishedDefaults.has(jobCode)) return true;
     if (!force && state.defaultRequests.has(jobCode)) return state.defaultRequests.get(jobCode);
     const requestedRevision = configRevision(jobCode);
-    const request = (async () => {
+    let request;
+    request = (async () => {
       try {
-        const response = await fetch(`${CONFIG_ENDPOINT}/skill-defaults?job_code=${encodeURIComponent(jobCode)}`, {
-          mode: 'cors', cache: 'no-store', credentials: 'omit'
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.default?.config) return false;
-        const normalized = currentJobCode() === jobCode
-          ? normalizeConfig(data.default.config, makeGeneratedRecommendedConfig())
-          : cloneValue(data.default.config);
-        state.publishedDefaults.set(jobCode, normalized);
+        const result = await requestPublishedDefault(jobCode);
+        if (!isLatestPublishedDefaultRequest(jobCode, result)) return false;
+        if (result.ok && !result.found) state.publishedDefaults.delete(jobCode);
+        if (!result.ok || !result.found) return false;
+        state.publishedDefaults.set(jobCode, result.config);
         if (applyWhenNoLocal && currentJobCode() === jobCode && configRevision(jobCode) === requestedRevision) {
-          state.configs[jobCode] = cloneValue(normalized);
+          state.configs[jobCode] = cloneValue(result.config);
           saveStore();
           if (!shell.hidden) renderWorkspace();
         }
@@ -502,11 +538,68 @@
       } catch (_) {
         return false;
       } finally {
-        state.defaultRequests.delete(jobCode);
+        if (state.defaultRequests.get(jobCode) === request) state.defaultRequests.delete(jobCode);
       }
     })();
     state.defaultRequests.set(jobCode, request);
     return request;
+  }
+
+  async function applyPublishedDefault() {
+    if (state.applyingPublishedDefault) return;
+    const jobCode = currentJobCode();
+    const jobName = currentJobName();
+    state.applyingPublishedDefault = true;
+    applyDefaultButton.disabled = true;
+    applyDefaultButton.setAttribute('aria-busy', 'true');
+    applyDefaultButton.textContent = '讀取中…';
+    try {
+      const result = await requestPublishedDefault(jobCode);
+      if (shell.hidden || currentJobCode() !== jobCode) {
+        if (!shell.hidden) showToast('職業已切換，未套用建議', 2800);
+        return;
+      }
+      if (!isLatestPublishedDefaultRequest(jobCode, result)) {
+        showToast('網站建議已更新，請再按一次套用', 3000);
+        return;
+      }
+      if (!result.ok) {
+        const message = result.error === 'unavailable'
+          ? '建議服務尚未設定'
+          : result.error === 'timeout'
+            ? '讀取網站建議逾時，請再試一次'
+            : '無法取得網站建議，請檢查網路後再試';
+        showToast(message, 3200);
+        return;
+      }
+      if (!result.found) {
+        state.publishedDefaults.delete(jobCode);
+        showToast(`${jobName} 尚未發布網站建議`, 2800);
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `確定套用「${jobName}」的網站建議嗎？\n\n` +
+        '目前這個職業的兩頁技能按鍵、8 組組合技能、PC 鍵盤、註記與玩法說明都會被完整覆蓋。\n' +
+        '其他職業不受影響。'
+      );
+      if (!confirmed || shell.hidden || currentJobCode() !== jobCode) return;
+
+      cancelKeyRecording();
+      state.publishedDefaults.set(jobCode, result.config);
+      state.configs[jobCode] = cloneValue(result.config);
+      markConfigEdited(jobCode);
+      state.target = null;
+      const saved = saveStore();
+      render();
+      if (saved) showToast(`${jobName} 已套用網站建議`, 2600);
+    } finally {
+      state.applyingPublishedDefault = false;
+      applyDefaultButton.disabled = false;
+      applyDefaultButton.removeAttribute('aria-busy');
+      applyDefaultButton.textContent = '套用建議';
+      if (!shell.hidden && currentJobCode() === jobCode) applyDefaultButton.focus({ preventScroll: true });
+    }
   }
 
   function makeElementsInert(elements) {
@@ -1429,6 +1522,7 @@
   });
   shell.querySelector('.sc-footer').addEventListener('click', event => {
     const action = event.target.closest('[data-action]')?.dataset.action;
+    if (action === 'apply-default') applyPublishedDefault();
     if (action === 'clear') clearCurrent();
     if (action === 'save') saveStore('草稿已儲存');
     if (action === 'submit') openSubmitDialog();

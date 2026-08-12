@@ -677,6 +677,8 @@ body.sc-locked { overflow: hidden; }
 }
 
 .sc-button:hover { filter: brightness(.96); }
+.sc-button:disabled { cursor: wait; filter: saturate(.65); opacity: .72; }
+.sc-button.is-suggestion { background: #4f8eb5; margin-right: auto; }
 .sc-button.is-danger { background: var(--sc-danger); }
 .sc-button.is-primary { background: var(--sc-orange); }
 
@@ -728,6 +730,7 @@ body.sc-locked { overflow: hidden; }
   .sc-group-button small { display: none; }
   .sc-footer { flex-wrap: wrap; }
   .sc-button { flex: 1; min-width: 0; }
+  .sc-button.is-suggestion { margin-right: 0; }
 }
 
 @media (max-width: 470px) {
@@ -739,7 +742,7 @@ body.sc-locked { overflow: hidden; }
   .sc-slot { min-height: 76px; padding: 6px; }
   .sc-slot-name { display: none; }
   .sc-palette { grid-template-columns: 1fr; }
-  .sc-button { font-size: .65rem; padding-inline: 8px; }
+  .sc-button { flex: 1 1 calc(50% - 5px); font-size: .65rem; padding-inline: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
