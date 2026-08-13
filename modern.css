@@ -303,6 +303,205 @@ h1 {
   padding-right: 27px;
 }
 
+.job-field.has-published-default {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(118deg, var(--cyan), var(--violet) 54%, var(--yellow)) border-box;
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(63, 216, 209, 0.09), 0 10px 28px rgba(63, 102, 255, 0.13);
+}
+
+.job-field.has-published-default:focus-within,
+.job-field.is-picker-open {
+  box-shadow: 0 0 0 4px rgba(63, 102, 255, 0.13), 0 14px 34px rgba(63, 102, 255, 0.17);
+}
+
+.job-native-select {
+  height: 1px !important;
+  margin: -1px !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 1px !important;
+}
+
+.job-picker {
+  align-self: stretch;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.job-picker-trigger {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: 760;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 29px 0 0;
+  text-align: left;
+  width: 100%;
+}
+
+.job-picker-trigger:focus {
+  outline: 0;
+}
+
+.job-picker-trigger:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.job-picker-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-picker-current-badge,
+.job-picker-option-badge {
+  align-items: center;
+  background: linear-gradient(120deg, var(--navy), #314baf);
+  border: 1px solid rgba(255, 215, 108, 0.78);
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(27, 36, 80, 0.2);
+  color: #fff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.56rem;
+  font-weight: 900;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.job-picker-current-badge[hidden],
+.job-picker-option-badge[hidden],
+.job-picker-gem[hidden],
+.job-picker-menu[hidden] {
+  display: none;
+}
+
+.job-picker-current-badge i {
+  color: var(--yellow);
+  font-size: 0.62rem;
+  font-style: normal;
+  text-shadow: 0 0 8px rgba(255, 215, 108, 0.84);
+}
+
+.job-picker-menu {
+  background: rgba(250, 249, 245, 0.98);
+  border: 1px solid rgba(17, 24, 46, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(17, 24, 46, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+  display: grid;
+  gap: 7px;
+  max-height: min(520px, calc(100vh - var(--header-height) - 22px));
+  max-height: min(520px, calc(100dvh - var(--header-height) - 22px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  scrollbar-gutter: stable;
+  top: calc(100% + 9px);
+  width: min(380px, calc(100vw - 26px));
+  z-index: 120;
+}
+
+.job-picker-option {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(18, 22, 36, 0.1);
+  border-radius: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 760;
+  gap: 9px;
+  min-height: 44px;
+  padding: 8px 10px;
+  text-align: left;
+  transition: box-shadow 150ms ease, transform 150ms ease, border-color 150ms ease;
+  width: 100%;
+}
+
+.job-picker-option:hover,
+.job-picker-option.is-active {
+  border-color: rgba(63, 102, 255, 0.5);
+  box-shadow: 0 6px 18px rgba(63, 102, 255, 0.12);
+  transform: translateX(-2px);
+}
+
+.job-picker-option.is-selected:not(.is-published) {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.job-picker-option.is-published {
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.98), rgba(245, 243, 255, 0.98)) padding-box,
+    linear-gradient(115deg, var(--cyan), var(--violet) 52%, var(--yellow)) border-box;
+  border-color: transparent;
+  box-shadow: 0 7px 22px rgba(82, 89, 203, 0.14), 0 0 18px rgba(63, 216, 209, 0.08);
+}
+
+.job-picker-option.is-published.is-selected {
+  background:
+    linear-gradient(125deg, var(--navy), #273d80) padding-box,
+    linear-gradient(115deg, var(--cyan), var(--violet) 52%, var(--yellow)) border-box;
+  color: #fff;
+}
+
+.job-picker-option.is-published.is-active {
+  box-shadow: 0 8px 24px rgba(63, 102, 255, 0.24), 0 0 0 2px var(--blue);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.job-picker-gem {
+  color: #6459e9;
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  text-shadow: 0 0 10px rgba(63, 216, 209, 0.76), 0 0 4px rgba(255, 215, 108, 0.82);
+}
+
+.job-picker-option-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-picker-option.is-published .job-picker-option-badge {
+  font-size: 0.53rem;
+  padding: 3px 6px;
+}
+
+.job-picker-status {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .control-label {
   color: var(--blue);
   font-size: 0.61rem;
@@ -1512,6 +1711,35 @@ body.view-list .skill-card.is-collapsed::after {
     gap: 6px;
   }
 
+  .job-picker-trigger {
+    font-size: 0.78rem;
+    gap: 5px;
+    padding-right: 25px;
+  }
+
+  .job-picker-current-badge {
+    display: none;
+  }
+
+  .job-picker-current-badge span {
+    display: none;
+  }
+
+  .job-picker-menu {
+    border-radius: 15px;
+    gap: 6px;
+    max-height: min(60vh, calc(100vh - var(--header-height) - 18px));
+    max-height: min(60dvh, calc(100dvh - var(--header-height) - 18px));
+    padding: 8px;
+    width: min(380px, calc(100vw - 42px));
+    width: min(380px, calc(100dvw - 42px));
+  }
+
+  .job-picker-option {
+    font-size: 0.75rem;
+    padding-inline: 9px;
+  }
+
   main.wrap {
     padding-bottom: 52px;
     padding-top: 13px;
@@ -1754,5 +1982,29 @@ body.view-list .skill-card.is-collapsed::after {
   .mobile-filter-toggle,
   .stage-shortcuts button {
     transition-duration: 0.01ms !important;
+  }
+
+  .job-picker-option {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .job-field.has-published-default,
+  .job-picker-option.is-published {
+    border: 2px solid Highlight;
+  }
+
+  .job-picker-option.is-active {
+    outline: 2px solid Highlight;
+  }
+
+  .job-picker-current-badge,
+  .job-picker-option-badge {
+    border: 1px solid ButtonText;
+  }
+
+  .job-picker-trigger:focus-visible {
+    outline: 2px solid Highlight;
   }
 }

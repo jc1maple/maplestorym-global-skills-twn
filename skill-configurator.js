@@ -574,6 +574,7 @@
       }
       if (!result.found) {
         state.publishedDefaults.delete(jobCode);
+        document.dispatchEvent(new CustomEvent('skills:published-default-changed', { detail: { jobCode, published: false } }));
         showToast(`${jobName} 尚未發布網站建議`, 2800);
         return;
       }
