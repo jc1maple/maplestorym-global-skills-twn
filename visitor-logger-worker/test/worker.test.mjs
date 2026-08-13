@@ -79,6 +79,16 @@ function adminRequest(path, init = {}) {
   });
 }
 
+function publicRequest(path, init = {}) {
+  return new Request(`https://worker.example${path}`, {
+    ...init,
+    headers: {
+      origin: "https://jc1maple.github.io",
+      ...(init.headers || {}),
+    },
+  });
+}
+
 function emptySuggestion() {
   const page = () => Array(8).fill(null);
   const keys = (prefix) => Array.from({ length: 8 }, (_, index) => `${prefix}${index}`);
@@ -199,4 +209,43 @@ test("admin suggestion list returns and accepts a stable cursor", async () => {
   assert.equal(second.status, 200);
   assert.deepEqual(cursorBindings, [rows[1].created_at, rows[1].created_at, rows[1].id, 3]);
   assert.equal((await second.json()).next_cursor, null);
+});
+
+test("public skill default index returns metadata without configuration payloads", async () => {
+  let statementSql = "";
+  const db = new MockDB({
+    all(statement) {
+      statementSql = statement.sql;
+      return {
+        results: [
+          { job_code: "Cannoneer", job_name: "重砲指揮官", updated_at: "2026-08-12T08:23:59.558Z" },
+          { job_code: "../../secret", job_name: "無效", updated_at: "2026-08-12T08:00:00.000Z" },
+          { job_code: "SoulMaster", job_name: "聖魂劍士", updated_at: "2026-08-11T01:00:00.000Z" },
+        ],
+      };
+    },
+  });
+  const response = await worker.fetch(publicRequest("/skill-defaults/index"), env(db));
+  const data = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://jc1maple.github.io");
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.deepEqual(data, {
+    ok: true,
+    results: [
+      { job_code: "Cannoneer", job_name: "重砲指揮官", updated_at: "2026-08-12T08:23:59.558Z" },
+      { job_code: "SoulMaster", job_name: "聖魂劍士", updated_at: "2026-08-11T01:00:00.000Z" },
+    ],
+  });
+  assert.match(statementSql, /SELECT job_code, job_name, updated_at/);
+  assert.doesNotMatch(statementSql, /config_json|catalog_json|suggestion_id/);
+});
+
+test("public skill default index handles an empty catalog", async () => {
+  const db = new MockDB({ all: () => ({ results: [] }) });
+  const response = await worker.fetch(publicRequest("/skill-defaults/index"), env(db));
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, results: [] });
 });

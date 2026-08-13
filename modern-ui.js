@@ -19,6 +19,283 @@
   const stageShortcuts = document.getElementById("stage-shortcuts");
   const showcaseIcons = document.getElementById("showcase-icons");
   let pinnedAnimation = null;
+  let publishedJobCodes = new Set();
+  let publishedIndexGeneration = 0;
+  let publishedIndexRequestedAt = 0;
+  let publishedIndexLoading = false;
+  let publishedIndexRefreshQueued = false;
+  let jobPicker = null;
+  let jobPickerTypeahead = "";
+  let jobPickerTypeaheadTimer = 0;
+
+  function normalizedEndpoint(value) {
+    try {
+      const url = new URL(String(value || "").trim());
+      if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash) return "";
+      return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function publishedIndexEndpoint() {
+    const configured = normalizedEndpoint(window.MSM_SKILL_CONFIG_ENDPOINT || window.MSM_VISITOR_LOG_ENDPOINT || "");
+    const override = normalizedEndpoint(new URLSearchParams(window.location.search).get("skill_api"));
+    if (!override) return configured;
+    try {
+      const url = new URL(override);
+      const host = url.hostname.toLocaleLowerCase("en-US");
+      const isLocal = host === "127.0.0.1" || host === "localhost" || host === "[::1]" || host === "::1" || host.endsWith(".localhost");
+      const isOfficial = url.protocol === "https:" && override === "https://maplestorym-skills-visitor-logger.ace1eetfps.workers.dev";
+      return isLocal || isOfficial ? override : configured;
+    } catch (_) {
+      return configured;
+    }
+  }
+
+  function jobOptionName(option) {
+    return option?.textContent?.trim() || "全部職業";
+  }
+
+  function syncJobPickerSelection() {
+    if (!jobPicker || !job) return;
+    const selectedIndex = Math.max(0, Array.from(job.options).findIndex((option) => option.value === job.value));
+    const selected = jobPicker.options[selectedIndex] || jobPicker.options[0];
+    if (!selected) return;
+    const published = Boolean(selected.value && publishedJobCodes.has(selected.value));
+    jobPicker.value.textContent = selected.name;
+    jobPicker.field.classList.toggle("has-published-default", published);
+    jobPicker.currentBadge.hidden = !published;
+    const nextStatus = published ? `${selected.name}已有通過審核並套用的網站預設` : "";
+    if (jobPicker.status.textContent !== nextStatus) jobPicker.status.textContent = nextStatus;
+    jobPicker.options.forEach((item, index) => {
+      const isSelected = index === selectedIndex;
+      item.element.classList.toggle("is-selected", isSelected);
+      item.element.setAttribute("aria-selected", String(isSelected));
+    });
+    if (!jobPicker.open) setJobPickerActive(selectedIndex);
+  }
+
+  function syncPublishedJobDecorations() {
+    if (!jobPicker) return;
+    jobPicker.options.forEach((item) => {
+      const published = Boolean(item.value && publishedJobCodes.has(item.value));
+      item.element.classList.toggle("is-published", published);
+      item.badge.hidden = !published;
+      item.gem.hidden = !published;
+      item.element.setAttribute("aria-label", `${item.name}${published ? "，已有網站預設" : ""}`);
+    });
+    syncJobPickerSelection();
+  }
+
+  function setJobPickerActive(index) {
+    if (!jobPicker?.options.length) return;
+    const next = Math.max(0, Math.min(index, jobPicker.options.length - 1));
+    jobPicker.activeIndex = next;
+    jobPicker.options.forEach((item, itemIndex) => item.element.classList.toggle("is-active", itemIndex === next));
+    const active = jobPicker.options[next];
+    if (jobPicker.open) {
+      jobPicker.trigger.setAttribute("aria-activedescendant", active.element.id);
+      active.element.scrollIntoView({ block: "nearest" });
+    } else {
+      jobPicker.trigger.removeAttribute("aria-activedescendant");
+      window.clearTimeout(jobPickerTypeaheadTimer);
+      jobPickerTypeahead = "";
+    }
+  }
+
+  function setJobPickerOpen(open) {
+    if (!jobPicker || jobPicker.open === open) return;
+    jobPicker.open = open;
+    jobPicker.menu.hidden = !open;
+    jobPicker.field.classList.toggle("is-picker-open", open);
+    jobPicker.trigger.setAttribute("aria-expanded", String(open));
+    if (open) {
+      const selectedIndex = Math.max(0, jobPicker.options.findIndex((item) => item.value === job.value));
+      setJobPickerActive(selectedIndex);
+      window.requestAnimationFrame(() => jobPicker.options[jobPicker.activeIndex]?.element.scrollIntoView({ block: "nearest" }));
+    } else {
+      jobPicker.trigger.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  function selectJobPickerOption(index) {
+    if (!jobPicker || !job) return;
+    const item = jobPicker.options[index];
+    if (!item) return;
+    const changed = job.value !== item.value;
+    job.value = item.value;
+    syncJobPickerSelection();
+    setJobPickerOpen(false);
+    jobPicker.trigger.focus({ preventScroll: true });
+    if (changed) job.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function setupJobPicker() {
+    const field = job?.closest(".job-field");
+    if (!job || !field || field.dataset.pickerReady === "true") return;
+
+    const pickerRoot = document.createElement("div");
+    pickerRoot.className = "job-picker";
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "job-picker-trigger";
+    trigger.setAttribute("role", "combobox");
+    trigger.setAttribute("aria-haspopup", "listbox");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-labelledby", "job-field-label job-picker-value");
+
+    const value = document.createElement("span");
+    value.className = "job-picker-value";
+    value.id = "job-picker-value";
+    const currentBadge = document.createElement("span");
+    currentBadge.className = "job-picker-current-badge";
+    currentBadge.hidden = true;
+    currentBadge.setAttribute("aria-hidden", "true");
+    currentBadge.innerHTML = '<i>◆</i><span>網站預設</span>';
+    trigger.append(value, currentBadge);
+
+    const menu = document.createElement("div");
+    menu.className = "job-picker-menu";
+    menu.id = "job-picker-listbox";
+    menu.setAttribute("role", "listbox");
+    menu.setAttribute("aria-labelledby", "job-field-label");
+    menu.hidden = true;
+    trigger.setAttribute("aria-controls", menu.id);
+
+    const status = document.createElement("span");
+    status.className = "job-picker-status";
+    status.id = "job-picker-status";
+    status.setAttribute("aria-live", "polite");
+    trigger.setAttribute("aria-describedby", status.id);
+
+    const options = Array.from(job.options).map((option, index) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "job-picker-option";
+      item.tabIndex = -1;
+      item.id = `job-picker-option-${index}`;
+      item.setAttribute("role", "option");
+      item.dataset.value = option.value;
+
+      const gem = document.createElement("span");
+      gem.className = "job-picker-gem";
+      gem.textContent = "◆";
+      gem.hidden = true;
+      gem.setAttribute("aria-hidden", "true");
+      const name = document.createElement("span");
+      name.className = "job-picker-option-name";
+      name.textContent = jobOptionName(option);
+      const badge = document.createElement("span");
+      badge.className = "job-picker-option-badge";
+      badge.textContent = "網站預設";
+      badge.hidden = true;
+      badge.setAttribute("aria-hidden", "true");
+      item.append(gem, name, badge);
+      item.addEventListener("click", () => selectJobPickerOption(index));
+      menu.append(item);
+      return { element: item, badge, gem, name: name.textContent, value: option.value };
+    });
+
+    pickerRoot.append(trigger, menu);
+    field.append(pickerRoot, status);
+    job.classList.add("job-native-select");
+    job.hidden = true;
+    job.tabIndex = -1;
+    job.setAttribute("aria-hidden", "true");
+    field.dataset.pickerReady = "true";
+    jobPicker = { field, root: pickerRoot, trigger, value, currentBadge, menu, status, options, activeIndex: 0, open: false };
+
+    trigger.addEventListener("click", () => setJobPickerOpen(!jobPicker.open));
+    trigger.addEventListener("keydown", (event) => {
+      const key = event.key;
+      if (key === "ArrowDown" || key === "ArrowUp") {
+        event.preventDefault();
+        if (!jobPicker.open) setJobPickerOpen(true);
+        else setJobPickerActive(jobPicker.activeIndex + (key === "ArrowDown" ? 1 : -1));
+        return;
+      }
+      if (key === "Home" || key === "End") {
+        if (!jobPicker.open) return;
+        event.preventDefault();
+        setJobPickerActive(key === "Home" ? 0 : jobPicker.options.length - 1);
+        return;
+      }
+      if (key === "Enter" || key === " ") {
+        event.preventDefault();
+        if (jobPicker.open) selectJobPickerOption(jobPicker.activeIndex);
+        else setJobPickerOpen(true);
+        return;
+      }
+      if (key === "Escape" && jobPicker.open) {
+        event.preventDefault();
+        setJobPickerOpen(false);
+      } else if (key === "Tab") {
+        setJobPickerOpen(false);
+      } else if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+        window.clearTimeout(jobPickerTypeaheadTimer);
+        jobPickerTypeahead += key.toLocaleLowerCase("zh-TW");
+        jobPickerTypeaheadTimer = window.setTimeout(() => { jobPickerTypeahead = ""; }, 650);
+        if (!jobPicker.open) setJobPickerOpen(true);
+        const start = (jobPicker.activeIndex + 1) % jobPicker.options.length;
+        const match = Array.from({ length: jobPicker.options.length }, (_, offset) => (start + offset) % jobPicker.options.length)
+          .find((index) => {
+            const item = jobPicker.options[index];
+            return item.name.toLocaleLowerCase("zh-TW").startsWith(jobPickerTypeahead) ||
+              item.value.toLocaleLowerCase("en-US").startsWith(jobPickerTypeahead);
+          });
+        if (match !== undefined) setJobPickerActive(match);
+      }
+    });
+    job.addEventListener("change", syncJobPickerSelection);
+    document.addEventListener("pointerdown", (event) => {
+      if (jobPicker?.open && !field.contains(event.target)) setJobPickerOpen(false);
+    });
+    window.addEventListener("resize", () => setJobPickerOpen(false));
+    syncJobPickerSelection();
+  }
+
+  async function refreshPublishedJobIndex({ force = false } = {}) {
+    const endpoint = publishedIndexEndpoint();
+    if (!endpoint || !jobPicker) return;
+    if (!force && Date.now() - publishedIndexRequestedAt < 15000) return;
+    if (publishedIndexLoading) {
+      if (force) publishedIndexRefreshQueued = true;
+      return;
+    }
+    publishedIndexLoading = true;
+    const generation = ++publishedIndexGeneration;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(`${endpoint}/skill-defaults/index`, {
+        mode: "cors",
+        cache: "no-store",
+        credentials: "omit",
+        signal: controller.signal,
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.ok || !Array.isArray(data.results) || generation !== publishedIndexGeneration) return;
+      const knownCodes = new Set(jobPicker.options.map((item) => item.value).filter(Boolean));
+      publishedJobCodes = new Set(
+        data.results
+          .map((item) => String(item?.job_code || ""))
+          .filter((code) => knownCodes.has(code)),
+      );
+      publishedIndexRequestedAt = Date.now();
+      syncPublishedJobDecorations();
+    } catch (_) {
+      // The native/custom job picker remains fully usable when the optional marker service is unavailable.
+    } finally {
+      window.clearTimeout(timeout);
+      publishedIndexLoading = false;
+      if (publishedIndexRefreshQueued) {
+        publishedIndexRefreshQueued = false;
+        refreshPublishedJobIndex({ force: true });
+      }
+    }
+  }
 
   body.classList.add("has-modern-ui");
 
@@ -551,6 +828,7 @@
       "aria-label",
       specificCount ? `進階篩選，目前套用 ${specificCount} 個條件` : "進階篩選",
     );
+    syncJobPickerSelection();
     updateShowcase({ visibleCards, visibleJobs, selectedJobName });
   }
 
@@ -575,5 +853,12 @@
     });
   }
 
+  setupJobPicker();
+  refreshPublishedJobIndex({ force: true });
+  window.addEventListener("focus", () => refreshPublishedJobIndex());
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) refreshPublishedJobIndex({ force: true });
+  });
+  document.addEventListener("skills:published-default-changed", () => refreshPublishedJobIndex({ force: true }));
   updateSummary();
 })();

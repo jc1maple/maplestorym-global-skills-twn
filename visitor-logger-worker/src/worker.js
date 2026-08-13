@@ -473,6 +473,26 @@ async function publicSkillDefault(request, env) {
   }, { headers: cors });
 }
 
+async function publicSkillDefaultIndex(request, env) {
+  const cors = corsHeaders(request, env);
+  const { results } = await env.DB.prepare(
+    `SELECT job_code, job_name, updated_at
+       FROM skill_defaults
+      ORDER BY job_code ASC`
+  ).all();
+  const published = (results || [])
+    .filter((row) => /^[A-Za-z0-9_]{1,80}$/.test(String(row.job_code || "")))
+    .map((row) => ({
+      job_code: String(row.job_code),
+      job_name: shortText(row.job_name, 100),
+      updated_at: String(row.updated_at || ""),
+    }));
+  return json(
+    { ok: true, results: published },
+    { headers: { ...cors, "cache-control": "no-store" } }
+  );
+}
+
 function encodeSuggestionCursor(createdAt, id) {
   return btoa(`${createdAt}\n${id}`)
     .replace(/\+/g, "-")
@@ -656,6 +676,9 @@ export default {
     }
     if (url.pathname === "/skill-defaults" && request.method === "GET") {
       return publicSkillDefault(request, env);
+    }
+    if (url.pathname === "/skill-defaults/index" && request.method === "GET") {
+      return publicSkillDefaultIndex(request, env);
     }
     if (url.pathname === "/admin/skill-suggestions" && request.method === "GET") {
       return adminSkillSuggestions(request, env);

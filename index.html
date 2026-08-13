@@ -581,7 +581,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="modern.css?v=20260805a">
+  <link rel="stylesheet" href="modern.css?v=20260813a">
   <link rel="stylesheet" href="skill-configurator.css?v=20260812a">
 </head>
 <body class="stage-all-mode">
@@ -612,9 +612,9 @@
           <input id="q" type="search" placeholder="搜尋技能、核心代碼或描述…" autocomplete="off">
           <kbd>/</kbd>
         </label>
-        <label class="control-field job-field" for="job">
-          <span class="control-label">職業</span>
-          <select id="job">
+        <div class="control-field job-field">
+          <span class="control-label" id="job-field-label">職業</span>
+          <select id="job" aria-labelledby="job-field-label">
           <option value="SoulMaster" selected>聖魂劍士</option>
 <option value="WindBreaker">破風使者</option>
 <option value="NightWalker">暗夜行者</option>
@@ -666,7 +666,7 @@
 <option value="Lara">菈菈</option>
           <option value="">全部職業</option>
           </select>
-        </label>
+        </div>
       </div>
     </div>
   </header>
@@ -169397,6 +169397,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     resetFilters.addEventListener('click', () => {
       q.value = '';
       job.value = defaultJobCode;
+      job.dispatchEvent(new Event('change', { bubbles: true }));
       for (const input of [stageAll, typeAll, coreAll]) {
         input.checked = true;
       }
@@ -169416,7 +169417,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     }
     applyFilter({ force: true });
   </script>
-  <script src="modern-ui.js?v=20260803f" defer></script>
-  <script src="skill-configurator.js?v=20260812a" defer></script>
+  <script src="modern-ui.js?v=20260813a" defer></script>
+  <script src="skill-configurator.js?v=20260813a" defer></script>
 </body>
 </html>
