@@ -551,6 +551,20 @@ body.sc-locked { overflow: hidden; }
   padding: 12px 16px 16px;
 }
 
+.sc-palette-item {
+  display: grid;
+  min-width: 0;
+}
+
+.sc-palette-item.is-expanded { grid-column: 1 / -1; }
+.sc-palette-item > .sc-palette-card { width: 100%; }
+.sc-palette-item.is-expanded > .sc-palette-card {
+  background: #fff;
+  border-color: #ef4960;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 0 2px rgba(239, 73, 96, .1);
+}
+
 .sc-palette-section-title {
   align-items: baseline;
   color: #526071;
@@ -642,6 +656,81 @@ body.sc-locked { overflow: hidden; }
 
 .sc-palette-card span { color: #8a929c; font-size: .57rem; font-weight: 700; }
 .sc-empty-palette { color: #8b939d; font-size: .72rem; grid-column: 1 / -1; padding: 30px 10px; text-align: center; }
+
+.sc-skill-detail {
+  background: linear-gradient(145deg, #fff 0%, #fff8f8 100%);
+  border: 1px solid #e8a0aa;
+  border-radius: 0 0 8px 8px;
+  border-top: 0;
+  box-shadow: 0 8px 18px rgba(75, 45, 52, .1);
+  color: #45505f;
+  min-width: 0;
+  padding: 10px 11px 11px;
+}
+
+.sc-skill-detail[hidden] { display: none; }
+.sc-skill-detail > header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.sc-skill-detail > header > span { display: grid; gap: 1px; min-width: 0; }
+.sc-skill-detail > header small {
+  color: #c14455;
+  font-size: .5rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+}
+
+.sc-skill-detail > header strong {
+  color: #303b49;
+  font-size: .74rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sc-skill-detail-close {
+  align-items: center;
+  background: #e8ecef;
+  border: 0;
+  border-radius: 50%;
+  color: #61707e;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 26px;
+  font: inherit;
+  font-size: 1rem;
+  height: 26px;
+  justify-content: center;
+  margin-left: auto;
+  padding: 0 0 2px;
+  width: 26px;
+}
+
+.sc-skill-detail-close:hover { background: #dfe4e8; color: #c3344b; }
+.sc-skill-detail-meta {
+  color: #77828e;
+  font-size: .56rem;
+  font-weight: 750;
+  line-height: 1.4;
+  margin: 0 0 6px;
+}
+
+.sc-skill-detail-description {
+  background: rgba(255, 255, 255, .84);
+  border-left: 3px solid #ef4960;
+  color: #485563;
+  font-size: .63rem;
+  line-height: 1.6;
+  margin: 0;
+  max-height: 165px;
+  overflow: auto;
+  padding: 7px 9px;
+  white-space: pre-line;
+}
 
 .sc-library-note {
   background: #eef5fa;
@@ -1866,4 +1955,71 @@ body.sc-locked { overflow: hidden; }
   .sc-combo-row {
     padding-inline: 5px;
   }
+}
+
+/* Explicit assignment mode: only a player-selected slot receives the red glow. */
+.sc-help-chip.is-armed {
+  background: #ffe8ec;
+  border: 1px solid #f1a0ad;
+  color: #b4263d;
+  box-shadow: 0 0 12px rgba(239, 51, 79, .16);
+}
+
+.sc-slot.is-target {
+  outline: 3px solid #ff3150;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, .94),
+    0 0 16px 5px rgba(255, 40, 72, .58);
+  animation: sc-target-glow 1.05s ease-in-out infinite alternate;
+  z-index: 3;
+}
+
+.sc-mobile-board .sc-slot.is-target,
+.sc-mobile-gamepad .sc-slot.is-target {
+  outline: 3px solid #ff3150;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, .94),
+    0 0 18px 6px rgba(255, 35, 70, .64);
+}
+
+.sc-slot:focus-visible {
+  outline: 3px solid #2589d8;
+  outline-offset: 3px;
+}
+
+.sc-slot.is-target:focus-visible { outline-color: #ff3150; }
+
+@keyframes sc-target-glow {
+  from {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, .92),
+      0 0 10px 3px rgba(255, 40, 72, .46);
+  }
+  to {
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, .98),
+      0 0 20px 7px rgba(255, 35, 70, .72);
+  }
+}
+
+@media (max-width: 470px) {
+  .sc-skill-detail { padding: 8px 9px 9px; }
+  .sc-skill-detail-description { max-height: 125px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-slot.is-target { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .sc-slot.is-target,
+  .sc-mobile-board .sc-slot.is-target,
+  .sc-mobile-gamepad .sc-slot.is-target {
+    animation: none;
+    outline: 3px solid Highlight;
+  }
+
+  .sc-palette-item.is-expanded > .sc-palette-card { outline: 2px solid Highlight; }
 }
