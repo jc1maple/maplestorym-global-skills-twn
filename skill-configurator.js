@@ -36,6 +36,7 @@
     libraryType: 'all',
     libraryQuery: '',
     target: null,
+    inspectedSkillId: null,
     recording: null,
     skills: [],
     skillMap: new Map(),
@@ -92,7 +93,7 @@
             <button class="sc-filter" type="button" data-type="combo">組合</button>
           </div>
           <div class="sc-palette"></div>
-          <div class="sc-library-note">先點左側欄位，再點技能即可配置；P1–P8 可放進技能按鍵與 PC 鍵盤，但不能放進另一個組合或功能快捷欄。</div>
+          <div class="sc-library-note">未選取按鍵時，點技能只會展開完整說明。點左側技能欄位讓紅光亮起後，再點技能即可配置；再次點同一欄位可取消選取。鍵名小標籤可修改實體鍵位。</div>
         </aside>
       </div>
       <footer class="sc-footer">
@@ -284,6 +285,8 @@
       if (!['active', 'buff'].includes(type)) return [];
       const name = card.querySelector('.skill-title h3')?.textContent?.trim() || card.querySelector('.skill-icon img')?.alt || `技能 ${index + 1}`;
       const icon = card.querySelector('.skill-icon img')?.getAttribute('src') || '';
+      const meta = plainTextWithBreaks(card.querySelector('.skill-meta'));
+      const skillDescription = plainTextWithBreaks(card.querySelector('.skill-desc'));
       const code = (card.dataset.text || '').match(/\bskill_[a-z0-9_]+/i)?.[0];
       const legacyBase = code || `${name}|${icon}`;
       const legacyId = seenLegacyBases.has(legacyBase) ? `${legacyBase}|${index}` : legacyBase;
@@ -308,6 +311,8 @@
         icon,
         type,
         stage: stageLabel(card.dataset.stage),
+        meta,
+        description: skillDescription,
         searchable: `${name} ${code || ''}`.toLocaleLowerCase('zh-Hant')
       }];
     });
@@ -443,6 +448,18 @@
 
   function shortClientText(value, maxLength) {
     return String(value ?? '').slice(0, maxLength);
+  }
+
+  function plainTextWithBreaks(element) {
+    if (!element) return '';
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    return String(clone.textContent || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/\r\n?/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
 
   function fixedArray(value, length, fallback) {
@@ -671,6 +688,7 @@
     config();
     if (beforeNormalization !== JSON.stringify(state.configs[jobCode])) saveStore();
     state.target = null;
+    state.inspectedSkillId = null;
     jobChip.textContent = currentJobName();
     shell.hidden = false;
     state.pageBackground = makeElementsInert([...document.body.children].filter(element => element !== shell));
@@ -715,7 +733,7 @@
     workspace.innerHTML = `<div class="sc-workspace-inner">
       <div class="sc-mode-heading">
         <div><h3>${title}</h3><p>${description}</p></div>
-        <span class="sc-help-chip">點按鍵 → 配置技能／撰寫註記</span>
+        <span class="sc-help-chip${state.target ? ' is-armed' : ''}">${escapeHtml(targetInstruction())}</span>
       </div>${body}</div>`;
     bindSlots();
     const restoreScrollPosition = () => {
@@ -874,6 +892,14 @@
     return '功能快捷欄';
   }
 
+  function targetInstruction() {
+    if (!state.target) return state.mode === 'combo'
+      ? '未選取組合欄位 · 點技能查看說明'
+      : '未選取按鍵 · 點技能查看說明';
+    if (state.target.area === 'combo') return `組合第 ${state.target.index + 1} 格已選取 · 點技能即可配置`;
+    return `${getKey(state.target) || '按鍵'} 已選取 · 點技能即可配置`;
+  }
+
   function slotMarkup(ref) {
     const id = ref.id;
     const assignment = id ? assignmentForId(id) : null;
@@ -896,8 +922,9 @@
       ? `${visual}${comboBadge}<span class="sc-slot-name">${escapeHtml(assignment.name)}</span><button class="sc-remove" type="button" aria-label="移除 ${escapeAttr(assignment.name)}">×</button>`
       : `<span class="sc-slot-number">${ref.index + 1}</span>`;
     const comboTitle = isCombo ? `P${assignment.comboIndex + 1}｜${assignment.name}｜${assignment.used}/8 個技能` : assignment?.name;
-    const title = assignment ? `${comboTitle}${hasNote ? '｜已有註記' : ''}` : '選擇此欄位';
-    return `<div class="sc-slot sc-slot--${escapeAttr(ref.area)}${assignment ? ' has-skill' : ' is-empty'}${isCombo ? ' has-combo' : ''}${hasNote ? ' has-note' : ''}${isTarget ? ' is-target' : ''}" role="button" tabindex="0" draggable="${Boolean(assignment)}" data-slot-ref="${encoded}" aria-label="${assignment ? escapeAttr(title) : `空白欄位 ${ref.index + 1}`}" title="${escapeAttr(title)}">${key}${content}</div>`;
+    const title = assignment ? `${comboTitle}${hasNote ? '｜已有註記' : ''}` : `空白欄位 ${ref.index + 1}`;
+    const selectionHint = isTarget ? '已選取；再點一次取消選取' : '點一下選取此欄位';
+    return `<div class="sc-slot sc-slot--${escapeAttr(ref.area)}${assignment ? ' has-skill' : ' is-empty'}${isCombo ? ' has-combo' : ''}${hasNote ? ' has-note' : ''}${isTarget ? ' is-target' : ''}" role="button" tabindex="0" draggable="${Boolean(assignment)}" data-slot-ref="${encoded}" aria-label="${escapeAttr(`${title}；${selectionHint}`)}" aria-pressed="${isTarget}" title="${escapeAttr(`${title}｜${selectionHint}`)}">${key}${content}</div>`;
   }
 
   function refIdentity(ref) {
@@ -911,6 +938,17 @@
     return Boolean(a && b && a.area === b.area && a.index === b.index && a.group === b.group && a.page === b.page);
   }
 
+  function toggleTarget(ref) {
+    state.target = sameTarget(ref, state.target) ? null : ref;
+    const encoded = encodeURIComponent(JSON.stringify(refIdentity(ref)));
+    renderWorkspace();
+    window.requestAnimationFrame(() => {
+      [...workspace.querySelectorAll('.sc-slot')]
+        .find(slot => slot.dataset.slotRef === encoded)
+        ?.focus({ preventScroll: true });
+    });
+  }
+
   function bindSlots() {
     workspace.querySelector('.sc-mobile-page-switch')?.addEventListener('click', () => {
       state.mobilePage = state.mobilePage === 0 ? 1 : 0;
@@ -922,8 +960,7 @@
       button.addEventListener('click', () => {
         state.comboGroup = Number(button.dataset.group);
         state.target = null;
-        workspace.querySelectorAll('.sc-combo-row').forEach((row, index) => row.classList.toggle('is-active', index === state.comboGroup));
-        updateClearAction();
+        renderWorkspace();
       });
     });
 
@@ -979,15 +1016,13 @@
       const ref = decodeRef(slot.dataset.slotRef);
       slot.addEventListener('click', event => {
         if (event.target.closest('.sc-remove, .sc-key')) return;
-        state.target = ref;
-        renderWorkspace();
+        toggleTarget(ref);
       });
       slot.addEventListener('keydown', event => {
         if (event.target !== slot) return;
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          state.target = ref;
-          renderWorkspace();
+          toggleTarget(ref);
         }
       });
       slot.addEventListener('dragstart', event => {
@@ -1070,18 +1105,8 @@
       ? []
       : Array.from({ length: 8 }, (_, index) => comboAssignment(index))
         .filter(item => item.used > 0 && (!query || item.searchable.includes(query)));
-    const comboCards = comboItems.map(item => `
-      <button class="sc-palette-card is-combo" type="button" draggable="true" data-skill-id="${escapeAttr(item.id)}" title="配置 P${item.comboIndex + 1}｜${escapeAttr(item.name)}">
-        <span class="sc-palette-combo-visual">
-          ${item.icon ? `<img src="${escapeAttr(item.icon)}" alt="">` : `<i>P${item.comboIndex + 1}</i>`}
-          <b class="sc-palette-combo-badge sc-combo-color-${item.comboIndex + 1}">P${item.comboIndex + 1}</b>
-        </span>
-        <span><strong>${escapeHtml(item.name)}</strong><span>組合技能 · ${item.used}/8</span></span>
-      </button>`).join('');
-    const skillCards = filteredSkills.map(skill => `
-      <button class="sc-palette-card" type="button" draggable="true" data-skill-id="${escapeAttr(skill.id)}" title="配置 ${escapeAttr(skill.name)}">
-        <img src="${escapeAttr(skill.icon)}" alt=""><span><strong>${escapeHtml(skill.name)}</strong><span>${TYPE_LABELS[skill.type]} · ${escapeHtml(skill.stage)}</span></span>
-      </button>`).join('');
+    const comboCards = comboItems.map(item => paletteItemMarkup(item)).join('');
+    const skillCards = filteredSkills.map(skill => paletteItemMarkup({ ...skill, kind: 'skill' })).join('');
     const sections = [];
     if (comboCards) sections.push(`<div class="sc-palette-section-title"><strong>組合技能 P1–P8</strong><span>可配置到技能按鍵與 PC 鍵盤</span></div>${comboCards}`);
     if (skillCards) {
@@ -1101,33 +1126,69 @@
         event.dataTransfer.setData('text/plain', id);
       });
     });
+    palette.querySelectorAll('.sc-skill-detail-close').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.closest('.sc-palette-item')?.dataset.skillItem;
+        if (id && state.inspectedSkillId === id) state.inspectedSkillId = null;
+        syncPaletteInspection();
+        palette.querySelector(`[data-skill-id="${CSS.escape(id || '')}"]`)?.focus({ preventScroll: true });
+      });
+    });
+  }
+
+  function paletteItemMarkup(item) {
+    const isCombo = item.kind === 'combo';
+    const expanded = state.inspectedSkillId === item.id;
+    const detailId = `sc-skill-detail-${stableToken(item.id)}`;
+    const label = isCombo ? `P${item.comboIndex + 1}｜${item.name}` : item.name;
+    const visual = isCombo
+      ? `<span class="sc-palette-combo-visual">
+          ${item.icon ? `<img src="${escapeAttr(item.icon)}" alt="">` : `<i>P${item.comboIndex + 1}</i>`}
+          <b class="sc-palette-combo-badge sc-combo-color-${item.comboIndex + 1}">P${item.comboIndex + 1}</b>
+        </span>`
+      : `<img src="${escapeAttr(item.icon)}" alt="">`;
+    const summary = isCombo
+      ? `組合技能 · ${item.used}/8`
+      : `${TYPE_LABELS[item.type]} · ${item.stage}`;
+    const description = String(item.description || '').trim() || (isCombo ? '尚未填寫這組組合技能的配置說明。' : '目前沒有技能敘述。');
+    const meta = !isCombo && item.meta ? `<p class="sc-skill-detail-meta">${escapeHtml(item.meta)}</p>` : '';
+    return `<div class="sc-palette-item${expanded ? ' is-expanded' : ''}" data-skill-item="${escapeAttr(item.id)}">
+      <button class="sc-palette-card${isCombo ? ' is-combo' : ''}" type="button" draggable="true" data-skill-id="${escapeAttr(item.id)}" aria-expanded="${expanded}" aria-controls="${detailId}" title="查看 ${escapeAttr(label)} 的完整說明">
+        ${visual}<span><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(summary)}</span></span>
+      </button>
+      <section class="sc-skill-detail" id="${detailId}" role="region" aria-label="${escapeAttr(label)} 技能敘述"${expanded ? '' : ' hidden'}>
+        <header><span><small>SKILL DESCRIPTION</small><strong>${escapeHtml(label)}</strong></span><button class="sc-skill-detail-close" type="button" aria-label="收起 ${escapeAttr(label)} 技能敘述">×</button></header>
+        ${meta}<p class="sc-skill-detail-description">${escapeHtml(description)}</p>
+      </section>
+    </div>`;
+  }
+
+  function syncPaletteInspection() {
+    const scrollTop = palette.scrollTop;
+    palette.querySelectorAll('.sc-palette-item').forEach(item => {
+      const expanded = item.dataset.skillItem === state.inspectedSkillId;
+      item.classList.toggle('is-expanded', expanded);
+      item.querySelector('.sc-palette-card')?.setAttribute('aria-expanded', String(expanded));
+      const detail = item.querySelector('.sc-skill-detail');
+      if (detail) detail.hidden = !expanded;
+    });
+    palette.scrollTop = scrollTop;
+    window.requestAnimationFrame(() => {
+      if (!shell.hidden) palette.scrollTop = scrollTop;
+    });
   }
 
   function assignSkill(id) {
-    let target = state.target;
-    if (!target) target = firstEmptyInCurrentMode();
-    if (!target) return showToast('請先選擇一個欄位');
+    state.inspectedSkillId = id;
+    syncPaletteInspection();
+    const target = state.target;
+    if (!target) return;
     if (!canAssignTo(target, id)) return showToast(assignmentRestrictionMessage(id));
+    if (getSlot(target) === id) return;
     setSlot(target, id);
     state.target = target;
     saveStore(comboIndexFromRef(id) >= 0 ? '組合技能已配置' : '技能已配置');
     renderWorkspace();
-  }
-
-  function firstEmptyInCurrentMode() {
-    if (state.mode === 'mobile') {
-      const index = config().mobilePages[state.mobilePage].findIndex(value => !value);
-      return index >= 0 ? { area: 'mobile', page: state.mobilePage, index } : null;
-    }
-    if (state.mode === 'combo') {
-      const index = config().combos[state.comboGroup].findIndex(value => !value);
-      return index >= 0 ? { area: 'combo', group: state.comboGroup, index } : null;
-    }
-    for (let page = 0; page < 2; page += 1) {
-      const index = config().pc[page].findIndex(value => !value);
-      if (index >= 0) return { area: 'pc', page, index };
-    }
-    return null;
   }
 
   function slotValue(cfg, ref) {
@@ -1544,6 +1605,7 @@
     if (beforeNormalization !== JSON.stringify(state.configs[jobCode])) saveStore();
     jobChip.textContent = currentJobName();
     state.target = null;
+    state.inspectedSkillId = null;
     render({ resetScroll: true });
     loadPublishedDefault(jobCode, !hadLocalConfig);
   });
