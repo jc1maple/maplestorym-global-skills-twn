@@ -4,8 +4,8 @@
   const core = window.BuccaneerSimulatorCore;
   if (!core) throw new Error('BuccaneerSimulatorCore is required');
 
-  const STORE_KEY = 'maplestorym-buccaneer-simulator-v1';
-  const TRACKS = ['origin', 'neptune', 'howling', 'meltdown', 'charge', 'filler', 'nautilus', 'serpent', 'lordDeep', 'spider', 'armorBreak'];
+  const STORE_KEY = 'maplestorym-buccaneer-simulator-v2';
+  const TRACKS = ['stimulate', 'origin', 'neptune', 'howling', 'meltdown', 'charge', 'filler', 'nautilus', 'serpent', 'lordDeep', 'spider', 'armorBreak'];
   const dom = {
     results: document.querySelector('.hs-results'), form: byId('bs-controls'), preset: byId('bs-preset'),
     presetHelp: byId('bs-preset-help'), startingCharges: byId('bs-start-charges'), freeMode: byId('bs-free-mode'),
@@ -14,7 +14,7 @@
     chargeDetail: byId('bs-charge-detail'), calibratedHits: byId('bs-calibrated-hits'), calibratedShare: byId('bs-calibrated-share'),
     legend: byId('bs-legend'), countdown: byId('bs-countdown'), timeline: byId('bs-timeline'), breakdown: byId('bs-breakdown'),
     audit: byId('bs-audit'), assumptions: byId('bs-assumption-list'), actionFilter: byId('bs-action-filter'),
-    actionRows: byId('bs-action-rows'), exportButton: byId('bs-export')
+    actionRows: byId('bs-action-rows'), exportButton: byId('bs-export'), searchStrip: byId('bs-search-strip')
   };
   let currentResult = null;
   let renderTimer = 0;
@@ -59,6 +59,13 @@
     dom.chargeDetail.textContent = `起始 ${summary.charge.start}＋補充 ${summary.charge.generated} · 溢出 ${summary.charge.overflow}`;
     dom.calibratedHits.textContent = formatNumber(summary.calibratedHits);
     dom.calibratedShare.textContent = `占總段數 ${(summary.calibratedHits / Math.max(1, summary.totalHits) * 100).toFixed(1)}% · 頁面明確標記`;
+    if (summary.search) {
+      dom.searchStrip.hidden = false;
+      dom.searchStrip.innerHTML = `<span><b>BEAM SEARCH</b>實際擴展 <strong>${formatNumber(summary.search.exploredStates)}</strong> 個合法狀態</span><span>Beam 寬度 <strong>${formatNumber(summary.search.beamWidth)}</strong></span><span>前景評分 <strong>${formatNumber(summary.search.scoredForegroundHits)}</strong> 段</span><em>近似最佳解，非數學窮舉證明</em>`;
+    } else {
+      dom.searchStrip.hidden = true;
+      dom.searchStrip.innerHTML = '';
+    }
     dom.presetHelp.textContent = result.preset.help;
     renderLegend(result);
     renderCountdown(result);
@@ -84,7 +91,8 @@
     const actionMap = groupBy(result.actions.filter(action => action.startMs >= 0 && action.startMs < result.windowMs), 'skillId');
     const hitMap = groupBy(result.hits, 'skillId');
     const ticks = Array.from({ length: 13 }, (_, index) => `<i class="hs-time-tick" style="left:${index / 12 * 100}%"><span>${index * 10}s</span></i>`).join('');
-    const tracks = TRACKS.map(skillId => {
+    const visibleTracks = result.summary.search ? TRACKS : TRACKS.filter(skillId => skillId !== 'stimulate');
+    const tracks = visibleTracks.map(skillId => {
       const skill = result.skills[skillId];
       const group = result.groups[skill.group];
       const actions = actionMap.get(skillId) || [];
@@ -100,7 +108,7 @@
       const pins = hits.filter((_, index) => index % stride === 0).map(hit => `<i class="hs-timeline-pin hs-timeline-pin--background" style="left:${hit.timeMs / result.windowMs * 100}%" title="${escapeAttr(`${formatTime(hit.timeMs)} ${skill.name} ${formatNumber(hit.hits)}段`) }"></i>`).join('');
       return `<div class="hs-track"><div class="hs-track-label"><img src="${escapeAttr(skill.icon)}" alt=""><span><b>${escapeHtml(skill.name)}</b><small>${formatNumber(summary.uses)} 次 · ${formatNumber(summary.hits)} 段</small></span></div><div class="hs-track-lane">${blocks}${pins}</div></div>`;
     }).join('');
-    dom.timeline.style.setProperty('--hs-track-count', TRACKS.length);
+    dom.timeline.style.setProperty('--hs-track-count', visibleTracks.length);
     dom.timeline.innerHTML = `<div class="hs-time-ruler">${ticks}</div>${tracks}`;
   }
 
@@ -167,7 +175,7 @@
   function restore() {
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (_) { /* ignore */ }
-    const value = core.normalizeOptions(saved || { preset: 'center' });
+    const value = core.normalizeOptions(saved || { preset: 'optimizer' });
     presetToControls(value.preset);
     dom.startingCharges.value = value.startingCharges;
     dom.freeMode.checked = value.freeMode;
@@ -177,7 +185,7 @@
   dom.preset.addEventListener('change', () => { presetToControls(dom.preset.value); scheduleRender(); });
   dom.form.addEventListener('input', scheduleRender);
   dom.actionFilter.addEventListener('change', () => currentResult && renderActionRows(currentResult, dom.actionFilter.value));
-  dom.reset.addEventListener('click', () => { presetToControls('center'); dom.startingCharges.value = 6; dom.freeMode.checked = true; dom.spider.checked = true; runSimulation(); });
+  dom.reset.addEventListener('click', () => { presetToControls('optimizer'); dom.startingCharges.value = 6; dom.freeMode.checked = true; dom.spider.checked = true; runSimulation(); });
   dom.exportButton.addEventListener('click', exportJson);
   restore();
   runSimulation();

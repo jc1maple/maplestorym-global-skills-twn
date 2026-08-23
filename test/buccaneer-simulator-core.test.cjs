@@ -5,6 +5,8 @@ const assert = require('node:assert/strict');
 const core = require('../buccaneer-simulator-core.js');
 
 function center() { return core.simulate({ preset: 'center' }); }
+let optimizerCache;
+function optimizer() { return optimizerCache || (optimizerCache = core.simulate({ preset: 'optimizer' })); }
 
 test('center model reproduces the audited 21,744 hit calibration', () => {
   const result = center();
@@ -89,4 +91,40 @@ test('unresolved server-cadence contribution stays explicit', () => {
   const result = center();
   assert.equal(result.summary.calibratedHits, 7200);
   assert.ok(result.audit.some(item => item.title === '背景傷害仍含校正項'));
+});
+
+test('optimizer explores legal orderings instead of replaying the fixed center priority', () => {
+  const result = optimizer();
+  assert.equal(result.summary.search.algorithm, 'Beam Search');
+  assert.equal(result.summary.search.beamWidth, 420);
+  assert.ok(result.summary.search.exploredStates > 100000);
+  assert.equal(result.summary.search.provenOptimal, false);
+  assert.ok(result.summary.totalHits > center().summary.totalHits);
+  assert.notEqual(result.actions.find(action => action.type === 'foreground')?.skillId, 'charge');
+});
+
+test('optimizer keeps required burst actions, all three balls, and a legal foreground lane', () => {
+  const result = optimizer();
+  const foreground = result.actions.filter(action => action.type === 'foreground').sort((a, b) => a.startMs - b.startMs);
+  assert.equal(foreground.filter(action => action.skillId === 'origin').length, 1);
+  assert.equal(foreground.filter(action => action.skillId === 'howling').length, 1);
+  assert.equal(foreground.filter(action => action.skillId === 'meltdown').length, 4);
+  assert.ok(foreground.some(action => action.skillId === 'nautilus'));
+  for (let index = 1; index < foreground.length; index += 1) assert.ok(foreground[index].startMs >= foreground[index - 1].endMs);
+  assert.ok(result.hits.every(hit => hit.timeMs >= 0 && hit.timeMs < 120000));
+});
+
+test('optimizer state machine spends all available charge without overflow', () => {
+  assert.deepEqual(optimizer().summary.charge, { start: 6, generated: 23, spent: 29, overflow: 0, end: 0, uses: 29 });
+});
+
+test('optimizer output is deterministic and exposes unresolved cadence assumptions', () => {
+  const first = optimizer();
+  const second = core.simulate({ preset: 'optimizer' });
+  assert.equal(first.summary.totalHits, second.summary.totalHits);
+  assert.deepEqual(
+    first.actions.filter(action => action.type === 'foreground').map(({ skillId, startMs, endMs, units }) => ({ skillId, startMs, endMs, units })),
+    second.actions.filter(action => action.type === 'foreground').map(({ skillId, startMs, endMs, units }) => ({ skillId, startMs, endMs, units }))
+  );
+  assert.ok(first.assumptions.some(line => line.includes('Server cadence')));
 });

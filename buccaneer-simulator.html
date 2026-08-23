@@ -16,7 +16,7 @@
       <span><small>MAPLESTORY M · GLOBAL / TWN</small><strong>拳霸招式模擬器</strong></span>
     </a>
     <div class="hs-header-actions">
-      <span class="hs-build-badge"><i></i> CHARGE + TRIGGER LEDGER</span>
+      <span class="hs-build-badge"><i></i> BEAM SEARCH + TRIGGER STATE</span>
       <a class="hs-back-link" href="index.html?job=Buccaneer">返回技能資料庫</a>
     </div>
   </header>
@@ -38,13 +38,14 @@
     <section class="hs-model-panel" aria-labelledby="bs-model-title">
       <div class="hs-section-heading">
         <div><p>MODEL CONTROL</p><h2 id="bs-model-title">模擬條件</h2></div>
-        <button id="bs-reset" class="hs-button hs-button--quiet" type="button">恢復中心模型</button>
+        <button id="bs-reset" class="hs-button hs-button--quiet" type="button">恢復最佳化預設</button>
       </div>
 
       <form id="bs-controls" class="hs-control-grid">
         <label class="hs-field hs-field--wide">
           <span>模型預設</span>
           <select id="bs-preset" name="preset">
+            <option value="optimizer">最佳化搜尋 Beta</option>
             <option value="center">實戰中心</option>
             <option value="client">客戶端主動作上限</option>
             <option value="conservative">保守可行</option>
@@ -90,6 +91,7 @@
         <article class="hs-metric"><span>海龍衝鋒</span><strong id="bs-charge-count">—</strong><small id="bs-charge-detail">—</small></article>
         <article class="hs-metric"><span>未解背景段數</span><strong id="bs-calibrated-hits">—</strong><small id="bs-calibrated-share">—</small></article>
       </div>
+      <div id="bs-search-strip" class="bs-search-strip" hidden></div>
 
       <section class="hs-timeline-card" aria-labelledby="bs-timeline-title">
         <div class="hs-section-heading hs-section-heading--timeline">
@@ -140,7 +142,7 @@
     </footer>
   </main>
 
-  <script src="buccaneer-simulator-core.js?v=20260823a"></script>
-  <script src="buccaneer-simulator.js?v=20260823a"></script>
+  <script src="buccaneer-simulator-core.js?v=20260823b"></script>
+  <script src="buccaneer-simulator.js?v=20260823b"></script>
 </body>
 </html>

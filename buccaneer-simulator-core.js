@@ -6,7 +6,9 @@
   'use strict';
 
   const WINDOW_MS = 120000;
-  const MODEL_ID = 'buccaneer-center-v1-trigger-charge-ledger';
+  const MODEL_ID = 'buccaneer-search-v2-trigger-state-machine';
+  const LEGACY_MODEL_ID = 'buccaneer-center-v1-trigger-charge-ledger';
+  const SEARCH_BEAM_WIDTH = 420;
   const DATA_BUILD = Object.freeze({
     manifest: '2.420.5698_3617075a',
     build: '20260812_170341',
@@ -29,6 +31,7 @@
     charge: skill('charge', '海龍衝鋒', 'icons/FuriousCharge.png', 'charge', 500, 300),
     howling: skill('howling', '海龍正拳', 'icons/HowlingFist.png', 'burst', 120000, 2520),
     meltdown: skill('meltdown', '海之霸主', 'icons/Meltdown_R.png', 'summon', 120000, 1260),
+    stimulate: skill('stimulate', '暴能續發', 'icons/Stimulate_R.png', 'passive', 120000, 450),
     lordDeep: skill('lordDeep', '海龍螺旋', 'icons/LordoftheDeep.png', 'summon', 0, 450),
     filler: skill('filler', '閃・連殺VI', 'icons/FistEnrage_VI.png', 'filler', 0, 570),
     nautilus: skill('nautilus', '戰艦鯨魚號', 'icons/BattleshipNautilus_R.png', 'trigger', 30000, 900),
@@ -38,6 +41,11 @@
   });
 
   const PRESETS = Object.freeze({
+    optimizer: Object.freeze({
+      id: 'optimizer', label: '最佳化搜尋 Beta', fillerLimit: 999, inputGapMs: 0,
+      meltdownBallHits: 500, assaultEnrageHits: 44, superFistBonus: 4,
+      help: '用 Beam Search 比較合法施放順序；充能、共享冷卻、海龍石與 80 秒暴能視窗都是搜尋狀態。'
+    }),
     center: Object.freeze({
       id: 'center', label: '實戰中心', fillerLimit: 130, inputGapMs: 0,
       battleshipHits: 3000, meltdownHits: 1500, serpentHits: 2700,
@@ -66,7 +74,7 @@
   }
 
   function normalizeOptions(input) {
-    const presetId = input?.preset && PRESETS[input.preset] ? input.preset : 'center';
+    const presetId = input?.preset && PRESETS[input.preset] ? input.preset : 'optimizer';
     const base = PRESETS[presetId];
     return Object.freeze({
       preset: presetId,
@@ -77,7 +85,10 @@
       inputGapMs: base.inputGapMs,
       battleshipHits: base.battleshipHits,
       meltdownHits: base.meltdownHits,
-      serpentHits: base.serpentHits
+      serpentHits: base.serpentHits,
+      meltdownBallHits: base.meltdownBallHits ?? 500,
+      assaultEnrageHits: base.assaultEnrageHits ?? 44,
+      superFistBonus: base.superFistBonus ?? 4
     });
   }
 
@@ -339,6 +350,277 @@
     return options.preset === 'center' && options.startingCharges === 6 && options.freeMode && options.precastSpider;
   }
 
+  function createSearchState(options) {
+    return {
+      t: 0, score: 0, charges: options.startingCharges, nextRechargeMs: 5000,
+      generated: 0, overflow: 0, spent: 0, chargeReady: 0,
+      originUsed: false, originEndMs: -1, howlingUsed: false,
+      meltdownUsed: false, meltdownUntil: 0, balls: 0,
+      nautilusReady: 0, nautilusUses: 0, fillerCount: 0,
+      serpentReady: 0, stoneStacks: 5, assaultReady: true,
+      fistBuffUntil: 0, superUntil: 0,
+      neptuneUntil: 0, nextNeptune: Infinity,
+      trail: null, depth: 0
+    };
+  }
+
+  function accrueSearchCharges(state, untilMs) {
+    while (state.nextRechargeMs <= untilMs && state.nextRechargeMs < WINDOW_MS) {
+      state.generated += 1;
+      if (state.charges < 6) state.charges += 1;
+      else state.overflow += 1;
+      state.nextRechargeMs += 5000;
+    }
+  }
+
+  function searchActions(state, options) {
+    const list = [];
+    if (!state.originUsed) list.push('origin');
+    if (!state.howlingUsed) list.push('howling');
+    if (!state.meltdownUsed) list.push('meltdownStart');
+    if (state.balls > 0 && state.t < state.meltdownUntil) list.push('meltdownBall');
+    if (state.t >= state.nautilusReady) list.push('nautilus');
+    if (state.charges > 0 && state.t >= state.chargeReady) list.push('charge');
+    if (state.fillerCount < options.fillerLimit) list.push('filler');
+    return list.filter(actionId => state.t + searchLock(actionId, options) < WINDOW_MS);
+  }
+
+  function searchLock(actionId, options) {
+    const base = {
+      origin: 4320, howling: 2520, meltdownStart: 450,
+      meltdownBall: 1260, nautilus: 900, charge: 300, filler: 570
+    }[actionId];
+    return base + options.inputGapMs;
+  }
+
+  function searchTransition(previous, actionId, options) {
+    const state = { ...previous };
+    const startMs = state.t;
+    const lockMs = searchLock(actionId, options);
+    const endMs = startMs + lockMs;
+    const events = [];
+    let units = 1;
+    let reason = '';
+    let offensive = false;
+    let serpentKind = '';
+    let nautilusEligible = false;
+
+    if (actionId === 'origin') {
+      state.originUsed = true;
+      state.originEndMs = endMs;
+      state.neptuneUntil = endMs + 30000;
+      state.nextNeptune = endMs;
+      events.push(hitEvent('origin', 4620, '起源根技能：42×50 + 42×60'));
+      reason = '搜尋器選擇的起源開啟點；後續 30 秒以攻擊觸發尼普頓。';
+      offensive = true;
+    } else if (actionId === 'howling') {
+      state.howlingUsed = true;
+      events.push(hitEvent('howling', 1740, '海龍正拳 66×16 + 684'));
+      reason = '搜尋器在可完整打完 2,520ms 動作的位置插入。';
+      offensive = true;
+      serpentKind = 'nonFist';
+      nautilusEligible = true;
+    } else if (actionId === 'meltdownStart') {
+      state.meltdownUsed = true;
+      state.meltdownUntil = endMs + 40000;
+      state.balls = 3;
+      reason = '先以客戶端 Activator 450ms 開啟 40 秒 Buff，三顆球改由搜尋器決定時點。';
+    } else if (actionId === 'meltdownBall') {
+      state.balls -= 1;
+      events.push({ ...hitEvent('meltdown', options.meltdownBallHits, '能量球 6 秒持續命中校正'), spreadMs: 6000, spreadCount: 12 });
+      reason = `Buff 視窗內發射第 ${3 - state.balls}/3 顆能量球；次序由搜尋得出。`;
+      offensive = true;
+    } else if (actionId === 'nautilus') {
+      state.nautilusUses += 1;
+      state.nautilusReady = startMs + 30000;
+      events.push(hitEvent('nautilus', 5, '戰艦鯨魚號直接傷害'));
+      reason = `第 ${state.nautilusUses} 次戰艦；30 秒冷卻與其他動作一起交給搜尋比較。`;
+      offensive = true;
+    } else if (actionId === 'charge') {
+      units = options.freeMode ? state.charges : 1;
+      state.charges -= units;
+      state.spent += units;
+      state.chargeReady = startMs + 500;
+      events.push(hitEvent('charge', units * 92, `${units} 層 × 92 段`));
+      reason = options.freeMode ? `自由模式消耗當前 ${units} 層，搜尋器同時考慮未來 5 秒補充。` : '單層消耗，遵守 0.5 秒技能冷卻。';
+      offensive = true;
+      serpentKind = 'nonFist';
+      nautilusEligible = true;
+    } else if (actionId === 'filler') {
+      const strengthened = endMs < state.fistBuffUntil ? 2 : 0;
+      const superBonus = endMs < state.superUntil ? options.superFistBonus : 0;
+      state.fillerCount += 1;
+      events.push(hitEvent('filler', 15 + strengthened + superBonus, superBonus ? `15 + 海龍強化 ${strengthened} + 超級閃連殺校正 ${superBonus}` : `15 + 海龍強化 ${strengthened}`));
+      reason = '基礎輸出；海龍強化與超級閃連殺是依當下 Buff 狀態結算。';
+      offensive = true;
+      serpentKind = 'fist';
+      nautilusEligible = true;
+    }
+
+    if (nautilusEligible) {
+      const triggerCount = actionId === 'howling' ? 17 : actionId === 'filler' ? 4 : 2;
+      events.push(hitEvent('nautilus', triggerCount * 4, `0.15 秒追加攻擊節點估計 ${triggerCount} 次 × 4`));
+    }
+
+    if (serpentKind && endMs >= state.serpentReady) {
+      const stimulateActive = endMs < 80000;
+      const assault = stimulateActive || state.assaultReady;
+      if (serpentKind === 'fist') {
+        if (assault) {
+          events.push(hitEvent('serpent', options.assaultEnrageHits, `海龍突擊之怒持續命中校正 ${options.assaultEnrageHits} 段`));
+          state.superUntil = endMs + 5000;
+        } else {
+          events.push(hitEvent('serpent', 10, '海龍之怒 10 段'));
+          state.fistBuffUntil = endMs + 15000;
+        }
+      } else {
+        events.push(hitEvent('serpent', 3, assault ? '海龍突擊 3 段' : '海龍爆裂 3 段'));
+      }
+      if (stimulateActive) {
+        state.assaultReady = true;
+        state.stoneStacks = 5;
+      } else if (assault) {
+        state.assaultReady = false;
+        state.stoneStacks = 0;
+      } else {
+        state.stoneStacks = Math.min(5, state.stoneStacks + 1);
+        if (state.stoneStacks === 5) state.assaultReady = true;
+      }
+      const cooldown = serpentKind === 'fist' ? (stimulateActive ? 1500 : 2500) : (stimulateActive ? 5000 : 8000);
+      state.serpentReady = endMs + cooldown;
+    }
+
+    if (offensive && endMs < state.neptuneUntil && endMs >= state.nextNeptune) {
+      events.push(hitEvent('neptune', 160, '攻擊命中且尼普頓 4.5 秒觸發已就緒'));
+      state.nextNeptune = endMs + 4500;
+    }
+
+    state.t = endMs;
+    accrueSearchCharges(state, endMs);
+    state.score += events.reduce((sum, event) => sum + event.hits, 0);
+    state.depth += 1;
+    state.trail = { actionId, previous: previous.trail };
+    return { state, startMs, endMs, units, reason, events };
+  }
+
+  function hitEvent(skillId, hits, reason) { return { skillId, hits, reason }; }
+
+  function searchKey(state) {
+    const q = value => Number.isFinite(value) ? Math.round(value / 150) : -1;
+    return [q(state.t), state.charges, q(state.nextRechargeMs), state.originUsed ? 1 : 0,
+      state.howlingUsed ? 1 : 0, state.meltdownUsed ? 1 : 0, state.balls,
+      q(state.meltdownUntil), q(state.nautilusReady), q(state.chargeReady),
+      q(state.serpentReady), state.stoneStacks, state.assaultReady ? 1 : 0,
+      q(state.fistBuffUntil), q(state.superUntil), q(state.neptuneUntil), q(state.nextNeptune)
+    ].join('|');
+  }
+
+  function optimisticScore(state, options) {
+    const remaining = Math.max(0, WINDOW_MS - state.t);
+    const originLock = state.originUsed ? 0 : searchLock('origin', options);
+    const howlingLock = state.howlingUsed ? 0 : searchLock('howling', options);
+    const meltdownLock = state.meltdownUsed ? state.balls * searchLock('meltdownBall', options) : searchLock('meltdownStart', options) + 3 * searchLock('meltdownBall', options);
+    const reservedMs = originLock + howlingLock + meltdownLock;
+    let estimate = state.score + Math.floor(Math.max(0, remaining - reservedMs) / searchLock('filler', options)) * (35 + options.superFistBonus);
+    if (!state.originUsed) {
+      const originEnd = state.t + searchLock('origin', options);
+      const triggerCount = Math.max(0, Math.min(7, Math.ceil((WINDOW_MS - originEnd) / 4500)));
+      estimate += 4620 + triggerCount * 160;
+    } else if (state.t < state.neptuneUntil) estimate += Math.max(0, Math.ceil((state.neptuneUntil - Math.max(state.t, state.nextNeptune)) / 4500)) * 160;
+    if (!state.howlingUsed) estimate += 1811;
+    if (!state.meltdownUsed) estimate += options.meltdownBallHits * 3;
+    else estimate += state.balls * options.meltdownBallHits;
+    estimate += state.charges * 100;
+    return estimate;
+  }
+
+  function optimizeRotation(options) {
+    let beam = [createSearchState(options)];
+    let exploredStates = 0;
+    let terminal = beam[0];
+    const maxDepth = 260;
+    for (let depth = 0; depth < maxDepth && beam.length; depth += 1) {
+      const deduped = new Map();
+      let expanded = false;
+      for (const candidate of beam) {
+        const actions = searchActions(candidate, options);
+        if (!actions.length) {
+          if (candidate.score > terminal.score) terminal = candidate;
+          continue;
+        }
+        expanded = true;
+        for (const actionId of actions) {
+          const next = searchTransition(candidate, actionId, options).state;
+          exploredStates += 1;
+          const key = searchKey(next);
+          const kept = deduped.get(key);
+          if (!kept || next.score > kept.score) deduped.set(key, next);
+        }
+      }
+      if (!expanded) break;
+      beam = Array.from(deduped.values()).sort((a, b) => optimisticScore(b, options) - optimisticScore(a, options) || b.score - a.score).slice(0, SEARCH_BEAM_WIDTH);
+      for (const candidate of beam) if (candidate.score > terminal.score) terminal = candidate;
+    }
+    for (const candidate of beam) if (candidate.score > terminal.score) terminal = candidate;
+    const path = [];
+    for (let node = terminal.trail; node; node = node.previous) path.push(node.actionId);
+    path.reverse();
+    return { path, terminal, exploredStates, beamWidth: SEARCH_BEAM_WIDTH };
+  }
+
+  function simulateOptimizer(options) {
+    const search = optimizeRotation(options);
+    const state = createState(options);
+    schedulePrecasts(state);
+    state.countdown.push({ skillId: 'stimulate', startMs: -450, label: '預先施放，0 秒起進入 80 秒最大海龍石視窗' });
+    addAction(state, { type: 'background', skillId: 'stimulate', startMs: -450, endMs: 80000, reason: '客戶端動作 450ms；Buff 80 秒、海龍之怒冷卻改 1.5 秒。' });
+    let replay = createSearchState(options);
+    for (const actionId of search.path) {
+      const transition = searchTransition(replay, actionId, options);
+      const skillId = actionId.startsWith('meltdown') ? 'meltdown' : actionId;
+      const action = addAction(state, { skillId, startMs: transition.startMs, endMs: transition.endMs, units: transition.units, reason: transition.reason });
+      for (const event of transition.events) {
+        if (event.spreadMs) scheduleDistributedHits(state, event.skillId, transition.endMs, event.spreadMs, event.hits, event.spreadCount, event.reason, action.id);
+        else addHit(state, { skillId: event.skillId, timeMs: transition.endMs, hits: event.hits, reason: event.reason, parentId: action.id });
+      }
+      replay = transition.state;
+    }
+    if (replay.originEndMs >= 0) scheduleStatusWindows(state, replay.originEndMs);
+    state.chargeGenerated = replay.generated;
+    state.chargeSpent = replay.spent;
+    state.chargeOverflow = replay.overflow;
+    const loop = { charges: replay.charges };
+    const summary = summarize(state, loop);
+    summary.search = {
+      algorithm: 'Beam Search', beamWidth: search.beamWidth, exploredStates: search.exploredStates,
+      scoredForegroundHits: search.terminal.score, provenOptimal: false
+    };
+    const rows = audit(state, summary).filter(row => row.title !== '中心模型對帳失敗' && row.title !== '自訂模型已啟用');
+    rows.unshift(auditRow('pass', '施放順序由搜尋器產生', `實際擴展 ${search.exploredStates.toLocaleString('zh-TW')} 個合法狀態，Beam 寬度 ${search.beamWidth}。`));
+    rows.push(auditRow('warning', '不是數學上的窮舉證明', 'Beam Search 會保留最有潛力的候選解；未解的持續攻擊頻率仍會影響最終次序。'));
+    return Object.freeze({
+      modelId: MODEL_ID, dataBuild: DATA_BUILD, options, preset: PRESETS.optimizer,
+      windowMs: WINDOW_MS, skills: SKILLS, groups: GROUPS,
+      countdown: state.countdown.slice().sort((a, b) => a.startMs - b.startMs),
+      actions: state.actions.slice().sort(sortByStart),
+      hits: state.hits.slice().sort((a, b) => a.timeMs - b.timeMs || a.id - b.id),
+      summary, audit: rows, assumptions: optimizerAssumptions(options)
+    });
+  }
+
+  function optimizerAssumptions(options) {
+    return [
+      '結算視窗固定為 0 ≤ hit_time < 120,000ms；搜尋目標是單體頂傷環境的總段數。',
+      `Beam Search 寬度 ${SEARCH_BEAM_WIDTH}；會搜尋起源、海龍正拳、海之霸主與三顆球、戰艦、海龍衝鋒、閃連殺的合法順序。`,
+      '暴能續發由 -0.450s 預放；前 80 秒使海龍石處於最大狀態，拳技觸發冷卻 1.5 秒，其後回到 2.5 秒。',
+      '海龍石、突擊狀態、海龍之怒／爆裂共享冷卻、15 秒海龍強化、5 秒超級閃連殺都逐事件更新。',
+      `海龍突擊之怒 5 秒持續物件暫以 ${options.assaultEnrageHits} 段，超級閃連殺每拳暫加 ${options.superFistBonus} 段；這兩個 Server cadence 尚未從客戶端表完整解出。`,
+      `海之霸主每顆球暫以 ${options.meltdownBallHits} 段校正；搜尋器會決定發射時點，但不會偽稱持續命中頻率已精確解出。`,
+      '戰艦追加以 0.15 秒觸發窗近似攻擊動作內可用節點；此為根據客戶端 ICD 的事件估計，不是封包實測 cadence。',
+      '海龍螺旋仍採現行 80 次、每次 24 段的實戰中心帳本；鏡之蜘蛛預放時計 276 段。'
+    ];
+  }
+
   function assumptionsFor(options) {
     return [
       '結算視窗固定為 0 ≤ hit_time < 120,000ms；單一固定 Boss、全程命中、以頂傷環境總段數為目標。',
@@ -355,6 +637,7 @@
 
   function simulate(input) {
     const options = normalizeOptions(input || {});
+    if (options.preset === 'optimizer') return simulateOptimizer(options);
     const state = createState(options);
     schedulePrecasts(state);
     const opening = scheduleOpening(state);
@@ -364,7 +647,7 @@
     scheduleStatusWindows(state, opening.originEndMs);
     const summary = summarize(state, loop);
     return Object.freeze({
-      modelId: MODEL_ID, dataBuild: DATA_BUILD, options, preset: PRESETS[options.preset],
+      modelId: LEGACY_MODEL_ID, dataBuild: DATA_BUILD, options, preset: PRESETS[options.preset],
       windowMs: WINDOW_MS, skills: SKILLS, groups: GROUPS,
       countdown: state.countdown.slice().sort((a, b) => a.startMs - b.startMs),
       actions: state.actions.slice().sort(sortByStart),
@@ -387,5 +670,5 @@
   function formatTime(ms) { return `${(ms / 1000).toFixed(3)}s`; }
   function formatNumber(value) { return new Intl.NumberFormat('zh-TW').format(Math.round(value || 0)); }
 
-  return Object.freeze({ WINDOW_MS, MODEL_ID, DATA_BUILD, GROUPS, SKILLS, PRESETS, normalizeOptions, simulate, exportResult, formatTime, formatNumber });
+  return Object.freeze({ WINDOW_MS, MODEL_ID, LEGACY_MODEL_ID, DATA_BUILD, GROUPS, SKILLS, PRESETS, normalizeOptions, simulate, optimizeRotation, exportResult, formatTime, formatNumber });
 });
