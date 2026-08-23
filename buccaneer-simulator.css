@@ -1,0 +1,63 @@
+.bs-theme {
+  --hs-paper: #edf5f4;
+  --hs-paper-2: #f5faf9;
+  --hs-ink: #071d31;
+  --hs-blue: #087ea4;
+  --hs-cyan: #35d3c7;
+  --hs-orange: #ff8a4c;
+  --hs-violet: #5969e8;
+  --hs-green: #09a783;
+  background:
+    radial-gradient(circle at 8% -8%, rgba(53, 211, 199, .29), transparent 31%),
+    radial-gradient(circle at 92% 2%, rgba(8, 126, 164, .2), transparent 28%),
+    linear-gradient(rgba(7, 29, 49, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(7, 29, 49, .035) 1px, transparent 1px),
+    var(--hs-paper);
+  background-size: auto, auto, 34px 34px, 34px 34px, auto;
+}
+
+.bs-theme .hs-header { background: rgba(7, 29, 49, .95); }
+.bs-theme .hs-hero {
+  background:
+    linear-gradient(118deg, rgba(7, 29, 49, .99), rgba(8, 82, 104, .95)),
+    var(--hs-ink);
+}
+.bs-theme .hs-hero::before {
+  background:
+    repeating-radial-gradient(ellipse at 88% 95%, transparent 0 20px, rgba(255,255,255,.035) 21px 22px),
+    radial-gradient(circle at 88% 12%, rgba(53, 211, 199, .38), transparent 25%),
+    radial-gradient(circle at 60% 105%, rgba(38, 103, 255, .34), transparent 36%);
+}
+.bs-theme .hs-metric--primary { background: linear-gradient(135deg, #087ea4, #2855d8); }
+.bs-theme .hs-breakdown-bar i { background: linear-gradient(90deg, #087ea4, #35d3c7); }
+.bs-theme .hs-brand-mark { background: linear-gradient(145deg, #041625, #0b6c84) padding-box, linear-gradient(135deg, #35d3c7, #5969e8, #ff8a4c) border-box; }
+
+.bs-client-facts {
+  min-height: 72px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 11px 13px;
+  border: 1px solid rgba(8, 126, 164, .22);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(8,126,164,.08), rgba(53,211,199,.1));
+}
+.bs-client-facts span { color: var(--hs-blue); font-size: 9px; font-weight: 900; letter-spacing: .13em; }
+.bs-client-facts b { font-size: 13px; }
+.bs-client-facts small { color: var(--hs-muted); font-size: 10px; line-height: 1.4; }
+
+.bs-calibrated-tag {
+  margin-left: 6px;
+  padding: 2px 5px;
+  color: #bd3557;
+  border: 1px solid rgba(239, 71, 111, .28);
+  border-radius: 6px;
+  background: rgba(239, 71, 111, .08);
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: .06em;
+}
+
+@media (max-width: 760px) {
+  .bs-client-facts { grid-column: 1 / -1; }
+}

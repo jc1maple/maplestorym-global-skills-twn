@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#071d31">
+  <title>拳霸 120 秒招式模擬器｜楓之谷 M Global/TWN</title>
+  <link rel="stylesheet" href="hayato-simulator.css?v=20260823b">
+  <link rel="stylesheet" href="buccaneer-simulator.css?v=20260823a">
+</head>
+<body class="bs-theme">
+  <header class="hs-header">
+    <a class="hs-brand" href="index.html?job=Buccaneer" aria-label="回到拳霸技能資料">
+      <span class="hs-brand-mark" aria-hidden="true">MS</span>
+      <span><small>MAPLESTORY M · GLOBAL / TWN</small><strong>拳霸招式模擬器</strong></span>
+    </a>
+    <div class="hs-header-actions">
+      <span class="hs-build-badge"><i></i> CHARGE + TRIGGER LEDGER</span>
+      <a class="hs-back-link" href="index.html?job=Buccaneer">返回技能資料庫</a>
+    </div>
+  </header>
+
+  <main class="hs-page">
+    <section class="hs-hero" aria-labelledby="bs-title">
+      <div>
+        <p class="hs-eyebrow">BUCCANEER · STRICT 120,000 MS</p>
+        <h1 id="bs-title">讓每一層海龍都不溢出</h1>
+        <p class="hs-hero-copy">把六層開場充能、五秒補充、起源後續、能量球、海龍持續物件與戰艦追加傷害排進同一條可重跑時間線。</p>
+      </div>
+      <div class="hs-hero-orbit" aria-hidden="true">
+        <div class="hs-orbit-ring"></div>
+        <img src="icons/LiberateNeptunes.png" alt="">
+        <span>120<small>SEC</small></span>
+      </div>
+    </section>
+
+    <section class="hs-model-panel" aria-labelledby="bs-model-title">
+      <div class="hs-section-heading">
+        <div><p>MODEL CONTROL</p><h2 id="bs-model-title">模擬條件</h2></div>
+        <button id="bs-reset" class="hs-button hs-button--quiet" type="button">恢復中心模型</button>
+      </div>
+
+      <form id="bs-controls" class="hs-control-grid">
+        <label class="hs-field hs-field--wide">
+          <span>模型預設</span>
+          <select id="bs-preset" name="preset">
+            <option value="center">實戰中心</option>
+            <option value="client">客戶端主動作上限</option>
+            <option value="conservative">保守可行</option>
+          </select>
+          <small id="bs-preset-help"></small>
+        </label>
+
+        <label class="hs-field">
+          <span>開場海龍衝鋒充能</span>
+          <div class="hs-number-wrap"><input id="bs-start-charges" name="startingCharges" type="number" min="0" max="6" step="1"><b>/ 6</b></div>
+          <small>進入計時前實際擁有的層數</small>
+        </label>
+
+        <div class="bs-client-facts" aria-label="客戶端固定資料">
+          <span>客戶端固定</span>
+          <b>5 秒補充 · 最多 6 層</b>
+          <small>此數值來自技能資料，不需要玩家填寫</small>
+        </div>
+
+        <label class="hs-toggle">
+          <input id="bs-free-mode" name="freeMode" type="checkbox">
+          <span class="hs-toggle-track" aria-hidden="true"></span>
+          <span><b>海龍自由模式</b><small>開場一次消耗全部充能，避免補充溢出</small></span>
+        </label>
+
+        <label class="hs-toggle">
+          <input id="bs-spider" name="precastSpider" type="checkbox">
+          <span class="hs-toggle-track" aria-hidden="true"></span>
+          <span><b>-1.08 秒鏡之蜘蛛</b><small>只計 0～120 秒內實際落地段數</small></span>
+        </label>
+      </form>
+
+      <div class="hs-model-note">
+        <strong>玩家只設定可觀察條件。</strong>
+        <span>動作鎖、補充時間與技能段數由 Global/TWN 客戶端模型載入；未解的 Server cadence 由預設選擇保守、中心或上限，不要求玩家自行輸入。</span>
+      </div>
+    </section>
+
+    <section class="hs-results" aria-busy="false">
+      <div class="hs-metric-grid">
+        <article class="hs-metric hs-metric--primary"><span>總傷害段數</span><strong id="bs-total-hits" aria-live="polite">—</strong><small id="bs-hit-range">嚴格計入 0.000～120.000 秒</small></article>
+        <article class="hs-metric"><span>前景施放動作</span><strong id="bs-action-count">—</strong><small id="bs-busy-time">—</small></article>
+        <article class="hs-metric"><span>海龍衝鋒</span><strong id="bs-charge-count">—</strong><small id="bs-charge-detail">—</small></article>
+        <article class="hs-metric"><span>未解背景段數</span><strong id="bs-calibrated-hits">—</strong><small id="bs-calibrated-share">—</small></article>
+      </div>
+
+      <section class="hs-timeline-card" aria-labelledby="bs-timeline-title">
+        <div class="hs-section-heading hs-section-heading--timeline">
+          <div><p>EVENT TIMELINE</p><h2 id="bs-timeline-title">120 秒施放時間線</h2></div>
+          <div class="hs-legend" id="bs-legend"></div>
+        </div>
+        <div class="hs-countdown" id="bs-countdown"></div>
+        <div class="hs-timeline-scroll"><div class="hs-timeline" id="bs-timeline"></div></div>
+        <div class="hs-timeline-caption">
+          <span><i class="hs-caption-main"></i> 色塊寬度＝實際占用輸入的動作鎖</span>
+          <span><i class="hs-caption-overlay"></i> 小圓點＝背景觸發或持續命中</span>
+        </div>
+      </section>
+
+      <div class="hs-analysis-grid">
+        <section class="hs-breakdown-card" aria-labelledby="bs-breakdown-title">
+          <div class="hs-section-heading"><div><p>DAMAGE SOURCES</p><h2 id="bs-breakdown-title">技能段數拆解</h2></div></div>
+          <div id="bs-breakdown" class="hs-breakdown"></div>
+        </section>
+        <section class="hs-audit-card" aria-labelledby="bs-audit-title">
+          <div class="hs-section-heading"><div><p>SIMULATION AUDIT</p><h2 id="bs-audit-title">可行性檢查</h2></div></div>
+          <div id="bs-audit" class="hs-audit"></div>
+          <details class="hs-assumptions"><summary>查看本次完整假設</summary><ul id="bs-assumption-list"></ul></details>
+        </section>
+      </div>
+
+      <section class="hs-actions-card" aria-labelledby="bs-actions-title">
+        <div class="hs-section-heading hs-section-heading--actions">
+          <div><p>INPUT LOG</p><h2 id="bs-actions-title">逐招編排結果</h2></div>
+          <div class="hs-action-tools">
+            <label><span>顯示</span><select id="bs-action-filter"><option value="all">全部事件</option><option value="foreground" selected>按鍵動作</option><option value="background">背景命中</option></select></label>
+            <button id="bs-export" class="hs-button hs-button--dark" type="button">匯出 JSON</button>
+          </div>
+        </div>
+        <div class="hs-table-wrap">
+          <table class="hs-action-table">
+            <thead><tr><th>#</th><th>開始</th><th>結束</th><th>技能／事件</th><th>段數</th><th>充能</th><th>編排理由</th></tr></thead>
+            <tbody id="bs-action-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <footer class="hs-footer">
+      <div><strong>資料版本</strong><span>Global/TWN manifest 2.420.5698_3617075a · build 20260812_170341</span></div>
+      <div><strong>客戶端動作時間</strong><span>閃連殺VI 570ms · 海龍衝鋒 300ms · 起源 4,320ms · 戰艦 900ms</span></div>
+      <div><strong>尚未解出的邊界</strong><span>戰艦追加、三顆能量球、海龍突擊之怒的 Server cadence 仍採可見校正帳本</span></div>
+    </footer>
+  </main>
+
+  <script src="buccaneer-simulator-core.js?v=20260823a"></script>
+  <script src="buccaneer-simulator.js?v=20260823a"></script>
+</body>
+</html>
