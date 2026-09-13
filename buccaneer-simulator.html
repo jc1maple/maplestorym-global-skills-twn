@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#071d31">
-  <title>拳霸 120 秒招式模擬器｜楓之谷 M Global/TWN</title>
+  <title>拳霸招式模擬｜楓之谷 M Global/TWN</title>
   <link rel="stylesheet" href="hayato-simulator.css?v=20260823b">
   <link rel="stylesheet" href="buccaneer-simulator.css?v=20260823a">
 </head>
@@ -13,7 +13,7 @@
   <header class="hs-header">
     <a class="hs-brand" href="index.html?job=Buccaneer" aria-label="回到拳霸技能資料">
       <span class="hs-brand-mark" aria-hidden="true">MS</span>
-      <span><small>MAPLESTORY M · GLOBAL / TWN</small><strong>拳霸招式模擬器</strong></span>
+      <span><small>MAPLESTORY M · GLOBAL / TWN</small><strong>拳霸招式模擬</strong></span>
     </a>
     <div class="hs-header-actions">
       <span class="hs-build-badge"><i></i> BEAM SEARCH + TRIGGER STATE</span>
@@ -24,9 +24,7 @@
   <main class="hs-page">
     <section class="hs-hero" aria-labelledby="bs-title">
       <div>
-        <p class="hs-eyebrow">BUCCANEER · STRICT 120,000 MS</p>
-        <h1 id="bs-title">讓每一層海龍都不溢出</h1>
-        <p class="hs-hero-copy">把六層開場充能、五秒補充、起源後續、能量球、海龍持續物件與戰艦追加傷害排進同一條可重跑時間線。</p>
+        <h1 id="bs-title">拳霸招式模擬</h1>
       </div>
       <div class="hs-hero-orbit" aria-hidden="true">
         <div class="hs-orbit-ring"></div>
@@ -45,10 +43,10 @@
         <label class="hs-field hs-field--wide">
           <span>模型預設</span>
           <select id="bs-preset" name="preset">
-            <option value="optimizer">最佳化搜尋 Beta</option>
-            <option value="center">實戰中心</option>
-            <option value="client">客戶端主動作上限</option>
-            <option value="conservative">保守可行</option>
+            <option value="optimizer">靶場最佳化搜尋 Beta</option>
+            <option value="center">舊版 21,744 校正參考</option>
+            <option value="client">固定編排無空檔</option>
+            <option value="conservative">100ms 延遲敏感度</option>
           </select>
           <small id="bs-preset-help"></small>
         </label>
@@ -80,7 +78,7 @@
 
       <div class="hs-model-note">
         <strong>玩家只設定可觀察條件。</strong>
-        <span>動作鎖、補充時間與技能段數由 Global/TWN 客戶端模型載入；未解的 Server cadence 由預設選擇保守、中心或上限，不要求玩家自行輸入。</span>
+        <span>主結果不加走位、人為延遲或 Boss 機制空檔；只結算 Global/TWN 客戶端動作鎖、冷卻、充能、Buff 與觸發規則。</span>
       </div>
     </section>
 

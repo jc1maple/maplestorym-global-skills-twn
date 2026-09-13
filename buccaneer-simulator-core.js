@@ -42,24 +42,24 @@
 
   const PRESETS = Object.freeze({
     optimizer: Object.freeze({
-      id: 'optimizer', label: '最佳化搜尋 Beta', fillerLimit: 999, inputGapMs: 0,
+      id: 'optimizer', label: '靶場最佳化搜尋 Beta', fillerLimit: 999, inputGapMs: 0,
       meltdownBallHits: 500, assaultEnrageHits: 44, superFistBonus: 4,
-      help: '用 Beam Search 比較合法施放順序；充能、共享冷卻、海龍石與 80 秒暴能視窗都是搜尋狀態。'
+      help: '固定靶、全程命中、零人為延遲；只依客戶端動作鎖、冷卻、資源與觸發規則搜尋。'
     }),
     center: Object.freeze({
-      id: 'center', label: '實戰中心', fillerLimit: 130, inputGapMs: 0,
+      id: 'center', label: '舊版 21,744 校正參考', fillerLimit: 130, inputGapMs: 0,
       battleshipHits: 3000, meltdownHits: 1500, serpentHits: 2700,
-      help: '以 22,000 段實戰校正建立事件帳本；中心結果固定對帳 21,744 段。'
+      help: '保留舊版人為 130 次閃連殺上限供對帳；不代表固定靶理論結果。'
     }),
     client: Object.freeze({
-      id: 'client', label: '客戶端主動作上限', fillerLimit: 999, inputGapMs: 0,
+      id: 'client', label: '固定編排無空檔', fillerLimit: 999, inputGapMs: 0,
       battleshipHits: 3200, meltdownHits: 1800, serpentHits: 3000,
-      help: '填滿所有可用主動作空檔，持續物件採校正上緣；代表理論輸入上限，不是保證實戰值。'
+      help: '不留走位或操作空檔，但仍是舊版固定優先序，持續物件採校正上緣；不是搜尋結果。'
     }),
     conservative: Object.freeze({
-      id: 'conservative', label: '保守可行', fillerLimit: 120, inputGapMs: 100,
+      id: 'conservative', label: '100ms 延遲敏感度', fillerLimit: 120, inputGapMs: 100,
       battleshipHits: 2700, meltdownHits: 1000, serpentHits: 2300,
-      help: '每次切招保留 100ms，背景持續傷害採校正下緣。'
+      help: '僅供延遲對照；每次切招保留 100ms，不屬於本次固定靶主結果。'
     })
   });
 
@@ -610,7 +610,7 @@
 
   function optimizerAssumptions(options) {
     return [
-      '結算視窗固定為 0 ≤ hit_time < 120,000ms；搜尋目標是單體頂傷環境的總段數。',
+      '結算視窗固定為 0 ≤ hit_time < 120,000ms；固定靶、全程命中、零人為延遲，只受技能動作鎖與下一招衔接硬限制。',
       `Beam Search 寬度 ${SEARCH_BEAM_WIDTH}；會搜尋起源、海龍正拳、海之霸主與三顆球、戰艦、海龍衝鋒、閃連殺的合法順序。`,
       '暴能續發由 -0.450s 預放；前 80 秒使海龍石處於最大狀態，拳技觸發冷卻 1.5 秒，其後回到 2.5 秒。',
       '海龍石、突擊狀態、海龍之怒／爆裂共享冷卻、15 秒海龍強化、5 秒超級閃連殺都逐事件更新。',
