@@ -353,6 +353,7 @@
     if (stage === 'hexa') return 'HEXA';
     if (stage === 'hyper') return '超技能';
     if (stage === 'origin') return '起源技能';
+    if (stage === 'stella') return '星辰代碼';
     return stage.replace(/^lv/i, 'Lv.');
   }
 
