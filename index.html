@@ -581,7 +581,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="modern.css?v=20260813a">
+  <link rel="stylesheet" href="modern.css?v=20260922-job-groups">
   <link rel="stylesheet" href="skill-configurator.css?v=20260813b">
 </head>
 <body class="stage-all-mode">
@@ -615,56 +615,68 @@
         <div class="control-field job-field">
           <span class="control-label" id="job-field-label">職業</span>
           <select id="job" aria-labelledby="job-field-label">
-          <option value="SoulMaster" selected>聖魂劍士</option>
-<option value="WindBreaker">破風使者</option>
-<option value="NightWalker">暗夜行者</option>
-<option value="FlameWizard">烈焰巫師</option>
-<option value="Striker">閃雷悍將</option>
-<option value="Aran">狂狼勇士</option>
-<option value="Mercedes">精靈遊俠</option>
-<option value="Evan">龍魔導士</option>
-<option value="Luminous">夜光</option>
-<option value="Phantom">幻影俠盜</option>
-<option value="EunWol">隱月</option>
-<option value="BattleMage">煉獄巫師</option>
-<option value="Mechanic">機甲戰神</option>
-<option value="WildHunter">狂豹獵人</option>
-<option value="DemonSlayer">惡魔殺手</option>
-<option value="DemonAvenger">惡魔復仇者</option>
-<option value="Xenon">傑諾</option>
-<option value="Kaiser">凱撒</option>
-<option value="AngelicBuster">天使破壞者</option>
-<option value="Kinesis">凱內西斯</option>
-<option value="Blaster">爆拳槍神</option>
-<option value="Sia">施亞</option>
-<option value="DarkKnight">黑騎士</option>
-<option value="BowMaster">箭神</option>
-<option value="NightLord">夜使者</option>
-<option value="Bishop">主教</option>
-<option value="Captain">槍神</option>
-<option value="Hero">英雄</option>
-<option value="MarksMan">神射手</option>
-<option value="Shadower">暗影神偷</option>
-<option value="Paladin">聖騎士</option>
-<option value="ArchMageIL">大魔導士(冰、雷)</option>
-<option value="Buccaneer">拳霸</option>
-<option value="ArchMageFP">大魔導士(火、毒)</option>
-<option value="Cannoneer">重砲指揮官</option>
-<option value="Pathfinder">開拓者</option>
-<option value="DualBlade">影武者</option>
-<option value="Ark">亞克</option>
-<option value="Kanna">陰陽師</option>
-<option value="Cadena">卡蒂娜</option>
-<option value="Adele">阿戴爾</option>
-<option value="HoYoung">虎影</option>
-<option value="Hayato">劍豪</option>
-<option value="Erel">葉里</option>
-<option value="Lynn">琳恩</option>
-<option value="Iel">艾伊爾</option>
-<option value="Kain">凱殷</option>
-<option value="GenesisWeapon">創世武器</option>
-<option value="Lara">菈菈</option>
-          <option value="">全部職業</option>
+            <option value="">全部職業</option>
+            <optgroup label="戰士">
+              <option value="SoulMaster" selected>聖魂劍士</option>
+              <option value="Aran">狂狼勇士</option>
+              <option value="DemonSlayer">惡魔殺手</option>
+              <option value="DemonAvenger">惡魔復仇者</option>
+              <option value="Kaiser">凱撒</option>
+              <option value="Blaster">爆拳槍神</option>
+              <option value="DarkKnight">黑騎士</option>
+              <option value="Hero">英雄</option>
+              <option value="Paladin">聖騎士</option>
+              <option value="Adele">阿戴爾</option>
+              <option value="Hayato">劍豪</option>
+              <option value="Erel">葉里</option>
+            </optgroup>
+            <optgroup label="法師">
+              <option value="FlameWizard">烈焰巫師</option>
+              <option value="Evan">龍魔導士</option>
+              <option value="Luminous">夜光</option>
+              <option value="BattleMage">煉獄巫師</option>
+              <option value="Kinesis">凱內西斯</option>
+              <option value="Sia">施亞</option>
+              <option value="Bishop">主教</option>
+              <option value="ArchMageIL">大魔導士(冰、雷)</option>
+              <option value="ArchMageFP">大魔導士(火、毒)</option>
+              <option value="Kanna">陰陽師</option>
+              <option value="Lynn">琳恩</option>
+              <option value="Lara">菈菈</option>
+            </optgroup>
+            <optgroup label="弓箭手">
+              <option value="WindBreaker">破風使者</option>
+              <option value="Mercedes">精靈遊俠</option>
+              <option value="WildHunter">狂豹獵人</option>
+              <option value="BowMaster">箭神</option>
+              <option value="MarksMan">神射手</option>
+              <option value="Pathfinder">開拓者</option>
+              <option value="Iel">艾伊爾</option>
+              <option value="Kain">凱殷</option>
+            </optgroup>
+            <optgroup label="盜賊">
+              <option value="NightWalker">暗夜行者</option>
+              <option value="Phantom">幻影俠盜</option>
+              <option value="Xenon">傑諾</option>
+              <option value="NightLord">夜使者</option>
+              <option value="Shadower">暗影神偷</option>
+              <option value="DualBlade">影武者</option>
+              <option value="Cadena">卡蒂娜</option>
+              <option value="HoYoung">虎影</option>
+            </optgroup>
+            <optgroup label="海盜">
+              <option value="Striker">閃雷悍將</option>
+              <option value="EunWol">隱月</option>
+              <option value="Mechanic">機甲戰神</option>
+              <option value="AngelicBuster">天使破壞者</option>
+              <option value="Captain">槍神</option>
+              <option value="Buccaneer">拳霸</option>
+              <option value="Cannoneer">重砲指揮官</option>
+              <option value="Ark">亞克</option>
+            </optgroup>
+            <optgroup label="其他">
+              <option value="GenesisWeapon">創世武器</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -171194,7 +171206,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     }
     applyFilter({ force: true });
   </script>
-  <script src="modern-ui.js?v=20260813a" defer></script>
+  <script src="modern-ui.js?v=20260922-job-groups" defer></script>
   <script src="skill-configurator.js?v=20260914-stella" defer></script>
 </body>
 </html>

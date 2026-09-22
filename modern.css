@@ -419,6 +419,38 @@ h1 {
   z-index: 120;
 }
 
+.job-picker-group {
+  display: grid;
+  gap: 7px;
+}
+
+.job-picker-group-label {
+  align-items: center;
+  background: #faf9f5;
+  border-bottom: 1px solid rgba(17, 24, 46, 0.1);
+  color: var(--ink-soft);
+  display: flex;
+  font-size: 0.72rem;
+  font-weight: 850;
+  justify-content: space-between;
+  letter-spacing: 0.06em;
+  padding: 12px 8px 9px;
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+}
+
+.job-picker-group-count {
+  color: var(--blue);
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.job-picker-group .job-picker-option {
+  scroll-margin-top: 44px;
+}
+
 .job-picker-option {
   align-items: center;
   background: #fff;

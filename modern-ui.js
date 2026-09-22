@@ -169,7 +169,34 @@
     status.setAttribute("aria-live", "polite");
     trigger.setAttribute("aria-describedby", status.id);
 
+    // Keep one source of truth: native optgroups also define the custom picker.
+    // The flattened options array excludes headings, preserving keyboard indices.
+    const groups = new Map();
     const options = Array.from(job.options).map((option, index) => {
+      let parent = menu;
+      const nativeGroup = option.parentElement;
+      if (nativeGroup?.tagName === "OPTGROUP") {
+        if (!groups.has(nativeGroup)) {
+          const group = document.createElement("div");
+          group.className = "job-picker-group";
+          group.setAttribute("role", "group");
+          const heading = document.createElement("div");
+          heading.className = "job-picker-group-label";
+          heading.id = `job-picker-group-${groups.size}`;
+          const label = document.createElement("span");
+          label.textContent = nativeGroup.label;
+          const count = document.createElement("span");
+          count.className = "job-picker-group-count";
+          count.textContent = nativeGroup.querySelectorAll("option").length;
+          count.setAttribute("aria-hidden", "true");
+          heading.append(label, count);
+          group.setAttribute("aria-labelledby", heading.id);
+          group.append(heading);
+          menu.append(group);
+          groups.set(nativeGroup, group);
+        }
+        parent = groups.get(nativeGroup);
+      }
       const item = document.createElement("button");
       item.type = "button";
       item.className = "job-picker-option";
@@ -193,7 +220,7 @@
       badge.setAttribute("aria-hidden", "true");
       item.append(gem, name, badge);
       item.addEventListener("click", () => selectJobPickerOption(index));
-      menu.append(item);
+      parent.append(item);
       return { element: item, badge, gem, name: name.textContent, value: option.value };
     });
 
