@@ -1519,6 +1519,26 @@ body.stage-all-mode .stage-header span {
   -webkit-user-select: text;
 }
 
+.hexa-upgrade {
+  background: #f3f5ff;
+  border: 1px solid #d9defc;
+  border-radius: 10px;
+  padding: 11px;
+  margin-bottom: 14px;
+  color: #374264;
+}
+.hexa-upgrade h4 { margin: 0 0 7px; color: #4255c5; font-size: 0.84rem; }
+.hexa-rules { font-size: 0.76rem; line-height: 1.8; }
+.hexa-total { margin: 9px 0; padding-top: 8px; border-top: 1px solid #d9defc; }
+.hexa-levels summary { cursor: pointer; color: #344bb8; font-weight: 700; }
+.hexa-levels summary:focus-visible { outline: 2px solid #5065e8; outline-offset: 3px; }
+.hexa-levels table { width: 100%; margin-top: 8px; border-collapse: collapse; table-layout: fixed; font-size: 0.72rem; }
+.hexa-levels caption { text-align: left; color: #5a6380; margin-bottom: 6px; font-size: 0.69rem; }
+.hexa-levels th, .hexa-levels td { padding: 7px 4px; border-bottom: 1px solid #d9defc; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.hexa-levels th:first-child { width: 30px; }
+.hexa-levels thead { background: #e7ebff; }
+.hexa-levels tbody tr:nth-child(even) { background: #ffffffa6; }
+
 .skill-card:not(.is-collapsed) .skill-desc {
   max-height: min(285px, calc(62vh - 112px));
   overflow: auto;

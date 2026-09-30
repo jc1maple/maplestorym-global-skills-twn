@@ -454,6 +454,7 @@
   function plainTextWithBreaks(element) {
     if (!element) return '';
     const clone = element.cloneNode(true);
+    clone.querySelectorAll('.hexa-levels').forEach(table => table.remove());
     clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
     return String(clone.textContent || '')
       .replace(/\u00a0/g, ' ')

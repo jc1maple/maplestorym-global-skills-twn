@@ -39,7 +39,11 @@ test('skill content and all existing option names/values remain unchanged', () =
   // Pinned published baseline; keeps this regression useful after committing.
   const before = execFileSync('git', ['show', '943b010:index.html'], { cwd: root, encoding: 'utf8', maxBuffer: 30 * 1024 * 1024 });
   const normalize = s => s.replace(/\r\n/g, '\n').replace(selectPattern, '<select id="job"></select>')
-    .replace(/(modern(?:-ui\.js|\.css))\?v=[^"\s]+/g, '$1?v=VERSION');
+    .replace(/(modern(?:-ui\.js|\.css)|skill-configurator\.js)\?v=[^"\s]+/g, '$1?v=VERSION')
+    // HEXA rules now have a translated panel; skill text below it must stay identical.
+    .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/g, '<p class="skill-desc">$1</p>')
+    .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/g, '$1')
+    .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '');
   assert.equal(normalize(html), normalize(before));
   assert.deepEqual(options(select).sort((a, b) => a.value.localeCompare(b.value)),
     options(before.match(selectPattern)[0]).sort((a, b) => a.value.localeCompare(b.value)));
