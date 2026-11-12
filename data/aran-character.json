@@ -1,0 +1,66 @@
+{
+ "frameWidth": 465,
+ "frameHeight": 389,
+ "originX": 277,
+ "originY": 282,
+ "facing": "left",
+ "animations": {
+  "Stand": {
+   "start": 0,
+   "count": 1,
+   "durations": [
+    150
+   ]
+  },
+  "Move": {
+   "start": 1,
+   "count": 4,
+   "durations": [
+    180,
+    180,
+    180,
+    180
+   ]
+  },
+  "Alert": {
+   "start": 5,
+   "count": 4,
+   "durations": [
+    500,
+    500,
+    500,
+    500
+   ]
+  },
+  "Attack_01": {
+   "start": 9,
+   "count": 23,
+   "durations": [
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60
+   ]
+  }
+ },
+ "columns": 6
+}

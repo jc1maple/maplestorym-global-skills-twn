@@ -2,7 +2,7 @@
    the figure, the reach of each skill and the dummy are simplified stand-ins, not client data. */
 (async () => {
   'use strict';
-  const data = await (await fetch('data/aran-practice.json?v=20261112b')).json();
+  const data = await (await fetch('data/aran-practice.json?v=20261112c')).json();
   const byId = Object.fromEntries(data.skills.map(skill => [skill.id, skill]));
   document.getElementById('pr-version').textContent = data.source;
   document.getElementById('pr-note').textContent =
@@ -64,6 +64,8 @@
   for (const skill of data.skills) if (skill.preview) image(skill.preview.src);
 
   const estimates = document.getElementById('opt-estimates');
+  const character = await (await fetch('data/aran-character.json?v=20261112c')).json();
+  const charImage = image('assets/practice/aran_char.png?v=20261112c');
   let state;
   function reset() {
     state = {
@@ -132,6 +134,7 @@
     if (step === 0 && state.now < (state.cooldown[slot.id] || 0)) return;
     if (state.startedAt === null) state.startedAt = state.now;
     p.lockUntil = state.now + (skill.lockMs || skill.actionMs || 300);
+    p.castAt = state.now;
     if (step === 0 && byId[slot.steps[0]].cooldownMs) state.cooldown[slot.id] = state.now + byId[slot.steps[0]].cooldownMs;
     (state.stats[skill.name] || (state.stats[skill.name] = { casts: 0, hits: 0, damage: 0 })).casts += 1;
     spawnEffect(skill.preview ? skill : byId[slot.steps[0]]);
@@ -263,14 +266,6 @@
     const guide = reachOf(byId.beyonder1);
     ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(p.x, FLOOR + 10); ctx.lineTo(p.x + p.facing * guide.front, FLOOR + 10); ctx.stroke(); ctx.setLineDash([]);
     // player (stand-in figure with a polearm)
-    const locked = state.now < p.lockUntil;
-    ctx.save(); ctx.translate(p.x, p.y); ctx.scale(p.facing, 1);
-    ctx.fillStyle = '#e8ecff'; ctx.fillRect(-11, -58, 22, 40);
-    ctx.fillStyle = '#ffd9b3'; ctx.beginPath(); ctx.arc(0, -70, 12, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#4a5fd0'; ctx.fillRect(-11, -18, 9, 18); ctx.fillRect(2, -18, 9, 18);
-    ctx.strokeStyle = '#9fd8ff'; ctx.lineWidth = 4; ctx.beginPath();
-    if (locked) { ctx.moveTo(-6, -40); ctx.lineTo(64, -56); } else { ctx.moveTo(-18, -4); ctx.lineTo(26, -92); }
-    ctx.stroke(); ctx.restore();
     // effects: sprite sheets face left in the client, so mirror them when the character faces right
     for (const effect of state.effects) {
       const pv = effect.skill.preview, img = image(pv.src);
@@ -285,6 +280,23 @@
       ctx.translate(effect.x + effect.facing * 70, effect.y - 60); ctx.scale(-effect.facing * scale, scale);
       ctx.drawImage(img, sx, sy, pv.w, pv.h, -pv.w / 2, -pv.h / 2, pv.w, pv.h);
       ctx.restore();
+    }
+    // the character is drawn over the effects so it stays readable
+    // Aran sprite from the client (NPC_Aran_05: Stand / Move / Attack_01). It faces left natively.
+    const locked = state.now < p.lockUntil;
+    if (charImage.complete && charImage.naturalWidth) {
+      const moving = !locked && p.y >= FLOOR && (held.has('ArrowRight') || held.has('KeyD') || held.has('ArrowLeft') || held.has('KeyA'));
+      const anim = character.animations[locked ? 'Attack_01' : moving ? 'Move' : 'Stand'];
+      let elapsed = locked ? state.now - (p.castAt || 0) : state.now % anim.durations.reduce((a, b) => a + b, 0);
+      let index = 0;
+      while (index < anim.count - 1 && elapsed >= anim.durations[index]) { elapsed -= anim.durations[index]; index += 1; }
+      const frameNo = anim.start + index;
+      const sx = (frameNo % character.columns) * character.frameWidth, sy = Math.floor(frameNo / character.columns) * character.frameHeight;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.scale(-p.facing, 1);
+      ctx.drawImage(charImage, sx, sy, character.frameWidth, character.frameHeight, -character.originX, -character.originY, character.frameWidth, character.frameHeight);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#e8ecff'; ctx.fillRect(p.x - 11, p.y - 58, 22, 58);
     }
     for (const floater of state.floaters) {
       const age = (state.now - floater.born) / 900;
