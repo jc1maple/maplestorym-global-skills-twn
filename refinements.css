@@ -107,3 +107,55 @@
   .sc-footer .sc-button { font-size: 0.8rem; min-height: 40px; padding: 8px 10px; }
   .sc-footer .sc-button.is-danger { background: transparent; border: 1px solid #c63d5d; box-shadow: none; color: #c63d5d; }
 }
+
+/* --- Cards: key numbers when closed, a full-width sheet when open ---------------------------- */
+.skill-keystats {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skill-card:not(.is-collapsed) .skill-keystats { display: none; }
+body.view-list .skill-card.is-collapsed.has-keystats .skill-meta { display: none; }
+/* the "+" sits to the left of the type pill in list view: keep text clear of it */
+body.view-list .skill-card.is-collapsed .skill-title { padding-right: 30px; }
+
+.stat-block {
+  background: #f6f5f0;
+  border-radius: 10px;
+  display: grid;
+  gap: 1px 22px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin: 6px 0;
+  padding: 8px 12px;
+}
+.stat-block > br { display: none; }  /* rows are grid items; the <br> stay in the DOM so copied text keeps its lines */
+.stat-row { display: block; }
+.stat-label { color: var(--muted); }
+.stat-value { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* An opened card takes the whole row instead of stretching one column and leaving the rest empty. */
+@media (min-width: 900px) {
+  body:not(.view-list) .skill-grid { grid-auto-flow: row dense; }
+  body:not(.view-list) .skill-card:not(.is-collapsed),
+  body:not(.view-list) .skill-card.has-pinned-animation:not(.is-collapsed) { grid-column: 1 / -1; }
+  body:not(.view-list) .skill-card:not(.is-collapsed) .skill-desc { column-gap: 40px; column-width: 380px; }
+  body:not(.view-list) .skill-card:not(.is-collapsed) .stat-block,
+  body:not(.view-list) .skill-card:not(.is-collapsed) .hexa-upgrade { break-inside: avoid; }
+}
+
+/* --- Legible small text: nothing below 12px, no faint grey on cream --------------------------- */
+.skill-meta { color: var(--ink-soft); font-family: inherit; font-size: 0.75rem; }
+.showcase-stats small,
+.showcase-code,
+.stage-shortcuts button,
+.content-toolbar small,
+.type-legend,
+.skill-subhead small,
+.stage-header span { font-size: 0.75rem; }
+.skill-subhead { font-size: 0.8rem; }
+.type-pill { font-size: 0.72rem; }
+.content-toolbar small, .skill-subhead small { color: var(--ink-soft); }

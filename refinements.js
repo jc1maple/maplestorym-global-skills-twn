@@ -99,4 +99,88 @@
 
   // --- 4. Phones start in the compact list ------------------------------------------------------
   if (window.matchMedia('(max-width: 680px)').matches) document.getElementById('view-list')?.click();
+
+  // --- 5. Descriptions you can scan: stat lines grouped, values emphasised, key numbers on the closed card ----
+  // Text content is left byte-identical (only inline wrappers are added) so search, copy and the configurator still work.
+  const STAT_LINE = /^((?:\[[^\]]{1,24}\]\s*)?[^:：<>]{1,26}[:：]\s*)(\S.{0,60})$/;
+
+  function enhanceCard(card) {
+    const desc = card.querySelector('.skill-desc');
+    if (!desc || desc.dataset.enhanced) return;
+    desc.dataset.enhanced = '1';
+    const lines = [];
+    let current = [];
+    for (const node of [...desc.childNodes]) {
+      if (node.nodeName === 'BR') { lines.push({ nodes: current, br: node }); current = []; } else current.push(node);
+    }
+    if (current.length) lines.push({ nodes: current, br: null });
+
+    const stats = [];
+    let block = null;
+    for (const line of lines) {
+      const text = line.nodes.length === 1 && line.nodes[0].nodeType === Node.TEXT_NODE ? line.nodes[0] : null;
+      const match = text && !/[。！？]$/.test(text.textContent) ? text.textContent.match(STAT_LINE) : null;
+      if (!match) { block = null; continue; }
+      const label = document.createElement('span');
+      label.className = 'stat-label';
+      label.textContent = match[1];
+      const value = document.createElement('span');
+      value.className = 'stat-value';
+      value.textContent = match[2];
+      if (!block) {
+        block = document.createElement('span');
+        block.className = 'stat-block';
+        text.before(block);
+      }
+      const row = document.createElement('span');
+      row.className = 'stat-row';
+      row.append(label, value);
+      block.append(row);
+      text.remove();
+      if (line.br) block.append(line.br);
+      stats.push([match[1].replace(/[:：]\s*$/, ''), match[2]]);
+    }
+
+    // Key numbers for the collapsed card.
+    const first = name => stats.find(([label]) => label === name)?.[1];
+    const parts = [];
+    const damage = first('技能傷害');
+    const hits = first('打擊次數');
+    if (damage) parts.push(hits ? `${damage} × ${hits} 擊` : damage);
+    const targets = first('目標人數');
+    if (targets) parts.push(`${targets} 目標`);
+    const cooldown = first('冷卻時間');
+    if (cooldown && !/^0(?:\.0+)?秒$/.test(cooldown)) parts.push(`冷卻 ${cooldown}`);
+    const buff = first('Buff時間');
+    if (buff) parts.push(`持續 ${buff}`);
+    if (!parts.length) {
+      for (const [label, value] of stats.filter(([label]) => !/^(技能等級|學習技能所需等級|對象|攻擊類型|所需MP|需要的HP)$/.test(label) && !label.startsWith('強化核心每級') && !/^Lv\.\d+ 追加$/.test(label)).slice(0, 2)) {
+        parts.push(`${label} ${value}`);
+      }
+    }
+    const title = card.querySelector('.skill-title');
+    if (parts.length && title && !title.querySelector('.skill-keystats')) {
+      const key = document.createElement('div');
+      key.className = 'skill-keystats';
+      key.textContent = parts.join('・');
+      title.querySelector('h3')?.after(key);
+      card.classList.add('has-keystats');
+    }
+  }
+
+  // The selected job first, everything else while the browser is idle.
+  const allCards = [...document.querySelectorAll('.skill-card')];
+  const visibleFirst = [...allCards.filter(card => !card.closest('.job-section')?.hidden), ...allCards.filter(card => card.closest('.job-section')?.hidden)];
+  let cursor = 0;
+  const idle = window.requestIdleCallback || (callback => setTimeout(() => callback({ timeRemaining: () => 12 }), 16));
+  function enhanceBatch(deadline) {
+    let budget = 400;
+    while (cursor < visibleFirst.length && budget-- > 0 && (budget > 250 || deadline.timeRemaining() > 2)) enhanceCard(visibleFirst[cursor++]);
+    if (cursor < visibleFirst.length) idle(enhanceBatch);
+  }
+  enhanceBatch({ timeRemaining: () => 50 });
+  // A job picked before the idle pass reaches it is enhanced right away.
+  document.addEventListener('skills:filter-applied', () => {
+    for (const card of document.querySelectorAll('.job-section:not([hidden]) .skill-card')) enhanceCard(card);
+  });
 })();
