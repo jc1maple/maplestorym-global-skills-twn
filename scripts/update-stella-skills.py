@@ -46,7 +46,7 @@ def update(text,data):
         block,job=m.group(1),m.group(2)
         mapping=data['job_mapping'].get(job)
         if not mapping:
-            assert job=='GenesisWeapon',f'Missing job mapping: {job}'
+            assert job in ('GenesisWeapon','Boris'),f'Missing job mapping: {job}'
             return block
         skill=skills[mapping['skill_code']]
         anchor='<section class="stage-section" data-stage-group="other">'

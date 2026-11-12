@@ -19,16 +19,17 @@ const options = text => [...text.matchAll(/<option value="([^"]*)"[^>]*>([^<]+)<
 test('all jobs appear once under the existing Global/TWN class mapping', () => {
   const groups = [...select.matchAll(/<optgroup label="([^"]+)">([\s\S]*?)<\/optgroup>/g)];
   assert.deepEqual(groups.map(g => g[1]), labels);
-  assert.deepEqual(groups.map(g => options(g[2]).length), [12, 12, 8, 8, 8, 1]);
+  // 其他 = 創世武器 + the limited-time TalesWeaver job 波里斯 (no Stella page, added by scripts/update-boris.py).
+  assert.deepEqual(groups.map(g => options(g[2]).length), [12, 12, 8, 8, 8, 2]);
   for (const [ , label, body] of groups) {
     for (const option of options(body)) {
-      if (option.value === 'GenesisWeapon') assert.equal(label, '其他');
+      if (['GenesisWeapon', 'Boris'].includes(option.value)) assert.equal(label, '其他');
       else assert.equal(label, classLabels[data.job_mapping[option.value].core_page.replace('ConstellaCore_', '')]);
     }
   }
   const rows = options(select);
-  assert.equal(rows.length, 50);
-  assert.equal(new Set(rows.map(r => r.value)).size, 50);
+  assert.equal(rows.length, 51);
+  assert.equal(new Set(rows.map(r => r.value)).size, 51);
   assert.equal(rows[0].value, '');
   const sections = [...html.matchAll(/<section class="job-section" data-job="([^"]+)"/g)].map(m => m[1]);
   assert.deepEqual(rows.map(r => r.value).filter(Boolean).sort(), sections.sort());
@@ -44,6 +45,9 @@ test('skill content and all existing option names/values remain unchanged', () =
     .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/g, '<p class="skill-desc">$1</p>')
     .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/g, '$1')
     .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '')
+    // 波里斯 job section (scripts/update-boris.py) did not exist in the baseline.
+    .replace(/<!-- job-boris:start -->[\s\S]*?<!-- job-boris:end -->/g, '')
+    .replace(/(<span><strong>)\d+(<\/strong> 個職業<\/span>)/g, '$1N$2')
     // Boss V-core cards (太陽之冠) are appended by scripts/update-boss-vcore.py; counters are verified in boss-vcore.test.cjs.
     .replace(/\n    \n\n      <!-- boss-vcore:start -->[\s\S]*?<!-- boss-vcore:end -->/g, '')
     // 2.460 V Matrix revamp (scripts/update-vcore-enhancement.py): new enhancement cards, renumbered meta, per-level damage line.
@@ -62,7 +66,7 @@ test('skill content and all existing option names/values remain unchanged', () =
     .split(esc(u.new_full).split(String.fromCharCode(10)).join('<br>')).join(esc(u.old_full).split(String.fromCharCode(10)).join('<br>'))
     .split(esc(u.new_full).toLowerCase()).join(esc(u.old_full).toLowerCase()), s);
   assert.equal(normalize(revert(html)), normalize(before));
-  assert.deepEqual(options(select).sort((a, b) => a.value.localeCompare(b.value)),
+  assert.deepEqual(options(select).filter(o => o.value !== 'Boris').sort((a, b) => a.value.localeCompare(b.value)),
     options(before.match(selectPattern)[0]).sort((a, b) => a.value.localeCompare(b.value)));
 });
 
@@ -112,7 +116,7 @@ test('grouped picker: mouse, keyboard, preset badges, native fallback and mobile
     await trigger.click();
     assert.deepEqual(await page.locator('.job-picker-group-label > span:first-child').allTextContents(), labels);
     assert.equal(await page.getByRole('group', { name: '戰士', exact: true }).getByRole('option').count(), 12);
-    assert.equal(await page.getByRole('option').count(), 50);
+    assert.equal(await page.getByRole('option').count(), 51);
     await page.screenshot({ path: path.join(output, 'desktop-warrior.png') });
     await option('Erel').click();
     await trigger.press('ArrowDown'); // opens on Erel, last warrior
@@ -130,7 +134,7 @@ test('grouped picker: mouse, keyboard, preset badges, native fallback and mobile
     await trigger.press('Home');
     await trigger.press('Enter');
     assert.equal(await page.locator('#job').inputValue(), '');
-    await page.waitForFunction(() => [...document.querySelectorAll('.job-section')].filter(s => !s.hidden).length === 49);
+    await page.waitForFunction(() => [...document.querySelectorAll('.job-section')].filter(s => !s.hidden).length === 50);
     await trigger.click();
     await trigger.press('End');
     await trigger.press('Enter');
