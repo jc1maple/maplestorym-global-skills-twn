@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSET_VERSION = '20261112'
+ASSET_VERSION = '20261112b'
 DATA_VERSION = ('2.460', 'Global/TWN 用戶端 2.460.5829，2026-11-12')
 
 
@@ -42,6 +42,11 @@ def update(text):
         text = text.replace(old_scope, new_scope)
 
     text = text.replace('placeholder="搜尋技能、核心代碼或描述…"', 'placeholder="搜尋技能或描述…"')
+
+    # Decorative English labels are dropped or written in Chinese; cache-bust the scripts touched for it.
+    text = re.sub(r' *<span>FILTERS</span>\r?\n', '', text)
+    text = text.replace('<span class="brand-kicker">MAPLESTORY M · GLOBAL / TWN</span>', '<span class="brand-kicker">楓之谷 M · 國際版繁中</span>')
+    text = re.sub(r'skill-configurator\.js\?v=[^"]*', f'skill-configurator.js?v={ASSET_VERSION}', text)
     return text
 
 

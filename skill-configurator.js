@@ -68,7 +68,7 @@
     <section class="sc-app" role="dialog" aria-modal="true" aria-labelledby="sc-title">
       <header class="sc-topbar">
         <div class="sc-title">
-          <span class="sc-eyebrow">MAPLESTORY M · GAME UI</span>
+          
           <h2 id="sc-title">技能</h2>
         </div>
         <span class="sc-job-chip" id="sc-job-name"></span>
@@ -107,7 +107,7 @@
         <form class="sc-submit-dialog" role="dialog" aria-modal="true" aria-labelledby="sc-submit-title">
           <div class="sc-submit-head">
             <div>
-              <span>PLAYER RECOMMENDATION</span>
+              
               <h3 id="sc-submit-title">提交技能配置建議</h3>
             </div>
             <button type="button" class="sc-submit-close" aria-label="關閉提交視窗">×</button>
@@ -845,7 +845,7 @@
         : '點選上方任一已配置按鍵，說明這個技能怎麼用、什麼時候使用。';
       return `<section class="sc-slot-note-panel is-idle" aria-label="按鍵使用註記">
         <span class="sc-note-pencil" aria-hidden="true">✎</span>
-        <div><span>BUTTON NOTE</span><strong>按鍵使用註記</strong><p>${message}</p></div>
+        <div><strong>按鍵使用註記</strong><p>${message}</p></div>
       </section>`;
     }
     const encoded = encodeURIComponent(JSON.stringify(refIdentity(ref)));
@@ -876,7 +876,7 @@
     const description = config().jobGuide.description;
     return `<section class="sc-job-guide-panel" aria-label="職業爆發與整體玩法">
       <header>
-        <span><small>JOB PLAY GUIDE</small><strong>職業爆發與整體玩法</strong></span>
+        <span><strong>職業爆發與整體玩法</strong></span>
         <span class="sc-auto-save">自動儲存</span>
       </header>
       <p>整理爆發前準備、Buff 與技能順序、平時循環、保命方式及 Boss 注意事項，讓其他玩家了解整體玩法。</p>

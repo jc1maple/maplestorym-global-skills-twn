@@ -159,3 +159,54 @@ body.view-list .skill-card.is-collapsed .skill-title { padding-right: 30px; }
 .skill-subhead { font-size: 0.8rem; }
 .type-pill { font-size: 0.72rem; }
 .content-toolbar small, .skill-subhead small { color: var(--ink-soft); }
+
+/* --- One header row on desktop: brand | search + job | actions -------------------------------- */
+@media (min-width: 1100px) {
+  header.page-header .wrap {
+    align-items: center;
+    column-gap: 22px;
+    display: grid;
+    grid-template-columns: auto minmax(360px, 1fr) auto;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  header.page-header .title-row { display: contents; }
+  header.page-header .site-brand { grid-column: 1; grid-row: 1; }
+  header.page-header .controls { grid-column: 2; grid-row: 1; margin: 0; }
+  header.page-header .header-meta { grid-column: 3; grid-row: 1; }
+  header.page-header .header-meta > span:not(.data-version) { display: none; }
+}
+.showcase-stamp { display: none; }
+
+/* --- Stage shortcuts inside the sticky toolbar ------------------------------------------------ */
+.toolbar-stages { display: none; flex: 1; gap: 6px; justify-content: center; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.toolbar-stages::-webkit-scrollbar { display: none; }
+.toolbar-stages button {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 10px;
+}
+.toolbar-stages button:hover { border-color: var(--blue); color: var(--blue); }
+@media (min-width: 900px) {
+  .content-toolbar.is-stuck .toolbar-stages { display: flex; }
+  .content-toolbar.is-stuck small { display: none; }
+}
+
+/* --- Legend as quick type filter --------------------------------------------------------------- */
+.type-legend > span[role="button"] {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 4px 9px;
+  user-select: none;
+}
+.type-legend > span[role="button"]:hover { border-color: var(--line); }
+.type-legend > span[role="button"][aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.type-legend > span[role="button"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }

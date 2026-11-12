@@ -183,4 +183,48 @@
   document.addEventListener('skills:filter-applied', () => {
     for (const card of document.querySelectorAll('.job-section:not([hidden]) .skill-card')) enhanceCard(card);
   });
+
+  // --- 6. Stage shortcuts follow you: once the showcase scrolls away the sticky toolbar offers them ----------
+  const toolbar = document.querySelector('.content-toolbar');
+  const shortcuts = document.getElementById('stage-shortcuts');
+  const showcase = document.querySelector('.job-showcase');
+  if (toolbar && shortcuts && showcase) {
+    const nav = document.createElement('nav');
+    nav.className = 'toolbar-stages';
+    nav.setAttribute('aria-label', '快速前往技能階段');
+    toolbar.firstElementChild.after(nav);
+    const mirror = () => {
+      nav.replaceChildren(...[...shortcuts.querySelectorAll('button')].map(source => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = source.textContent;
+        button.addEventListener('click', () => source.click());
+        return button;
+      }));
+    };
+    new MutationObserver(mirror).observe(shortcuts, { childList: true, subtree: true, characterData: true });
+    mirror();
+    new IntersectionObserver(([entry]) => toolbar.classList.toggle('is-stuck', !entry.isIntersecting), { rootMargin: '-140px 0px 0px 0px' }).observe(showcase);
+  }
+
+  // --- 7. The type legend doubles as a quick filter ---------------------------------------------------------
+  const legend = [...document.querySelectorAll('.type-legend > span')].map(item => {
+    const type = ['active', 'buff', 'passive'].find(name => item.classList.contains(`legend-${name}`));
+    const input = type && document.querySelector(`.type-check[value="${type}"]`);
+    if (!input) return null;
+    item.setAttribute('role', 'button');
+    item.setAttribute('tabindex', '0');
+    item.title = `只看${item.textContent.trim()}技能（再點一次取消）`;
+    const toggle = () => input.click();
+    item.addEventListener('click', toggle);
+    item.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+    });
+    return { item, input };
+  }).filter(Boolean);
+  const syncLegend = () => {
+    for (const { item, input } of legend) item.setAttribute('aria-pressed', String(input.checked));
+  };
+  document.addEventListener('skills:filter-applied', syncLegend);
+  syncLegend();
 })();

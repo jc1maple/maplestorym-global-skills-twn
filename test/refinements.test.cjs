@@ -9,8 +9,8 @@ const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 
 test('shell edits are applied and idempotent', () => {
-  assert.match(html, /<link rel="stylesheet" href="refinements\.css\?v=\d+">/);
-  assert.match(html, /<script src="refinements\.js\?v=\d+" defer><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="refinements\.css\?v=[^"]+">/);
+  assert.match(html, /<script src="refinements\.js\?v=[^"]+" defer><\/script>/);
   assert.match(html, /<span class="data-version"[^>]*><strong>2\.460<\/strong> 資料版本<\/span>/);
   assert(html.includes('scopes.has(card.dataset.scope) || Boolean(term);'));
   execFileSync('python', ['scripts/update-shell.py', '--check'], { cwd: root });
