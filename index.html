@@ -583,6 +583,7 @@
   </style>
   <link rel="stylesheet" href="modern.css?v=20261001-hexa">
   <link rel="stylesheet" href="skill-configurator.css?v=20260813b">
+  <link rel="stylesheet" href="refinements.css?v=20261112">
 </head>
 <body class="stage-all-mode">
   <header class="page-header">
@@ -598,6 +599,7 @@
         <div class="header-meta" aria-label="資料庫摘要">
           <span><strong>4,717</strong> 筆技能</span>
           <span><strong>50</strong> 個職業</span>
+          <span class="data-version" title="Global/TWN 用戶端 2.460.5829，2026-11-12"><strong>2.460</strong> 資料版本</span>
           <button id="skill-config-open" class="skill-config-open" type="button">
             <span aria-hidden="true">⌨</span> 技能配置
           </button>
@@ -609,7 +611,7 @@
       <div class="controls">
         <label class="control-field search-field" for="q">
           <span class="control-icon" aria-hidden="true"></span>
-          <input id="q" type="search" placeholder="搜尋技能、核心代碼或描述…" autocomplete="off">
+          <input id="q" type="search" placeholder="搜尋技能或描述…" autocomplete="off">
           <kbd>/</kbd>
         </label>
         <div class="control-field job-field">
@@ -675,7 +677,7 @@
               <option value="Ark">亞克</option>
             </optgroup>
             <optgroup label="其他">
-              <option value="Boris">波里斯</option>
+              <option value="Boris">波里斯（期間限定）</option>
               <option value="GenesisWeapon">創世武器</option>
             </optgroup>
           </select>
@@ -159418,7 +159420,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
             const stageMatch = !stages || stages.has(card.dataset.stage);
             const typeMatch = !types || types.has(card.dataset.type);
             const coreMatch = !cores || cores.has(card.dataset.core);
-            const scopeMatch = !scopes || scopes.has(card.dataset.scope);
+            const scopeMatch = !scopes || scopes.has(card.dataset.scope) || Boolean(term); // a text search spans every scope
             const show = jobMatch && stageMatch && typeMatch && coreMatch && scopeMatch && (!term || text.includes(term));
             if (card.hidden === show) card.hidden = !show;
             if (show) {
@@ -159557,6 +159559,7 @@ lv 1: damageup 1; lv 1: damageup 10; lv 10: damageup 5; lv 20: damageup 5; lv 30
     applyFilter({ force: true });
   </script>
   <script src="modern-ui.js?v=20260922-job-groups" defer></script>
+  <script src="refinements.js?v=20261112" defer></script>
   <script src="skill-configurator.js?v=20261001-hexa" defer></script>
 </body>
 </html>

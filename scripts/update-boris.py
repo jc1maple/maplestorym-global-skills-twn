@@ -97,8 +97,10 @@ def section(data):
 def update(text, data):
     job = data['job']
     text = re.sub(re.escape(MARKER_START) + r'[\s\S]*?' + re.escape(MARKER_END), '', text)
-    option = f'<option value="{job["code"]}">{esc(job["name"])}</option>\n              '
-    text = text.replace(option, '')
+    label = esc(job["name"]) + '（期間限定）'
+    pad = chr(10) + ' ' * 14
+    text = re.sub(r'<option value="' + job["code"] + r'">[^<]*</option>\s*', '', text)
+    option = f'<option value="{job["code"]}">{label}</option>' + pad
     assert text.count(ANCHOR) == 1 and text.count(OPTION_ANCHOR) == 1
     text = text.replace(ANCHOR, section(data) + ANCHOR, 1)
     text = text.replace(OPTION_ANCHOR, option + OPTION_ANCHOR, 1)

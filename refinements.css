@@ -1,0 +1,109 @@
+/* 2026-11 refinements: skills first. Compact showcase, solid toolbar, Lv.200 sub-groups, denser phone layout. */
+
+/* --- Showcase: one compact band instead of a 340px poster ------------------------------------ */
+.job-showcase {
+  grid-template-columns: minmax(0, 1fr) 250px;
+  min-height: 0;
+}
+.job-showcase::after { font-size: clamp(4rem, 8vw, 6.5rem); }
+.showcase-copy { padding: 22px 18px 22px 32px; }
+.showcase-kicker,
+.showcase-copy p { display: none; }
+.showcase-copy h2 {
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  margin: 9px 0 0;
+}
+.showcase-stats { gap: 22px; margin-top: 14px; }
+.showcase-stats strong { font-size: 1.15rem; }
+.stage-shortcuts { margin-top: 14px; }
+.showcase-visual {
+  height: 340px;
+  justify-self: end;
+  margin-bottom: -170px;
+  min-height: 0;
+  transform: scale(0.5);
+  transform-origin: top right;
+  width: 500px;
+}
+
+/* --- Result toolbar: solid, slim, never ghosting over the cards ------------------------------ */
+.content-toolbar {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  align-items: center;
+  background: var(--paper-bright);
+  margin: 14px 0 18px;
+  min-height: 0;
+  padding: 10px 14px 10px 18px;
+  /* flush under the real header height (measured in refinements.js) so no card strip shows in between */
+  top: calc(var(--measured-header, var(--header-height)) + 2px);
+}
+.content-eyebrow { display: none; }
+.content-toolbar strong { font-size: 1.02rem; }
+.content-toolbar small { margin-top: 2px; }
+
+/* --- Lv.200 sub-groups (inserted by refinements.js) ------------------------------------------ */
+.skill-subhead {
+  align-items: baseline;
+  color: var(--ink-soft);
+  display: flex;
+  font-size: 0.74rem;
+  font-weight: 800;
+  gap: 8px;
+  grid-column: 1 / -1;
+  letter-spacing: 0.02em;
+  margin: 10px 2px -2px;
+}
+.skill-subhead:first-child { margin-top: 0; }
+.skill-subhead small { color: var(--muted); font-size: 0.66rem; font-weight: 600; }
+.skill-subhead::after {
+  align-self: center;
+  background: var(--line);
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+.skill-subhead[hidden] { display: none; }
+
+.skill-icon[data-core-number] { position: relative; }
+.skill-icon[data-core-number]::before {
+  background: var(--navy);
+  border: 1.5px solid #fff;
+  border-radius: 999px;
+  color: #fff;
+  content: attr(data-core-number);
+  display: grid;
+  font-size: 0.62rem;
+  font-weight: 800;
+  height: 18px;
+  left: 2px;
+  line-height: 1;
+  place-items: center;
+  position: absolute;
+  top: 2px;
+  width: 18px;
+  z-index: 2;
+}
+
+/* --- Data version chip and limited-job tag --------------------------------------------------- */
+.header-meta .data-version strong { color: var(--blue); }
+
+/* --- Phones ---------------------------------------------------------------------------------- */
+@media (max-width: 680px) {
+  .job-showcase { grid-template-columns: minmax(0, 1fr); }
+  .showcase-visual { display: none; }
+  .showcase-copy { padding: 16px 16px 16px 18px; }
+  .showcase-copy h2 { font-size: 1.7rem; }
+  .showcase-stats { gap: 18px; margin-top: 10px; }
+  .stage-shortcuts { flex-wrap: nowrap; margin-top: 12px; overflow-x: auto; scrollbar-width: none; }
+  .stage-shortcuts::-webkit-scrollbar { display: none; }
+  .stage-shortcuts button { flex: none; }
+  .content-toolbar { padding: 8px 10px 8px 14px; }
+  .content-toolbar small { display: none; }
+  /* Configurator footer: smaller actions, destructive one visually separated */
+  .sc-footer { gap: 8px; min-height: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); padding-top: 8px; }
+  .sc-footer .sc-button { font-size: 0.8rem; min-height: 40px; padding: 8px 10px; }
+  .sc-footer .sc-button.is-danger { background: transparent; border: 1px solid #c63d5d; box-shadow: none; color: #c63d5d; }
+}
