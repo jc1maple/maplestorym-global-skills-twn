@@ -50,7 +50,13 @@ test('skill content and all existing option names/values remain unchanged', () =
     .replace(/(<h3>Lv\.200<\/h3>\s*<span>)\d+(<\/span>)/g, '$1N$2')
     .replace(/(<span><strong>)[\d,]+(<\/strong> 筆技能<\/span>)/g, '$1N$2')
     .replace(/<label class="filter-row">[\s\S]*?<\/label>/g, label => label.replace(/<strong>\d+<\/strong>/, '<strong>N</strong>'));
-  assert.equal(normalize(html), normalize(before));
+  // Cards refreshed from a newer client (scripts/update-skill-text.py) are mapped back to their baseline text.
+  const esc = v => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+  const updates = JSON.parse(fs.readFileSync(path.join(root, 'data/skill-text-updates.json'), 'utf8')).cards;
+  const revert = s => updates.reduce((acc, u) => acc
+    .split(esc(u.new_full).split(String.fromCharCode(10)).join('<br>')).join(esc(u.old_full).split(String.fromCharCode(10)).join('<br>'))
+    .split(esc(u.new_full).toLowerCase()).join(esc(u.old_full).toLowerCase()), s);
+  assert.equal(normalize(revert(html)), normalize(before));
   assert.deepEqual(options(select).sort((a, b) => a.value.localeCompare(b.value)),
     options(before.match(selectPattern)[0]).sort((a, b) => a.value.localeCompare(b.value)));
 });
