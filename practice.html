@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>狂狼勇士練習場｜楓之谷 M 技能資料庫</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('skill-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+  <link rel="stylesheet" href="practice.css?v=20261112a">
+</head>
+<body>
+  <header class="pr-header">
+    <a class="pr-back" href="./">← 技能資料庫</a>
+    <h1>狂狼勇士練習場</h1>
+    <span class="pr-version" id="pr-version"></span>
+  </header>
+  <main class="pr-main">
+    <section class="pr-stage-wrap">
+      <canvas id="stage" width="1100" height="460" aria-label="練習場：可左右移動、跳躍並施放技能的角色與木樁"></canvas>
+      <div class="pr-hud">
+        <div><small>時間</small><strong id="hud-time">120.0</strong></div>
+        <div><small>總段數</small><strong id="hud-hits">0</strong></div>
+        <div><small>總傷害 %</small><strong id="hud-damage">0</strong></div>
+        <div><small>每秒段數</small><strong id="hud-rate">0.0</strong></div>
+        <button id="btn-reset" type="button">重新開始 (Esc)</button>
+      </div>
+      <div class="pr-touch" aria-label="觸控操作">
+        <button data-hold="left" type="button">←</button>
+        <button data-hold="right" type="button">→</button>
+        <button data-tap="jump" type="button">跳</button>
+      </div>
+    </section>
+    <section class="pr-bar">
+      <div class="pr-bar-head">
+        <h2>技能鍵位</h2>
+        <p>方向鍵或 A／D 移動，Alt 或空白鍵跳躍（可二段跳）。點技能格可直接施放；點「改鍵」後按想要的鍵即可更換。</p>
+      </div>
+      <div id="slots" class="pr-slots"></div>
+    </section>
+    <section class="pr-log">
+      <h2>各技能統計</h2>
+      <table>
+        <thead><tr><th>技能</th><th>次數</th><th>段數</th><th>傷害 %</th><th>佔比</th></tr></thead>
+        <tbody id="log-body"><tr><td colspan="5">施放第一招後開始計時 120 秒。</td></tr></tbody>
+      </table>
+      <p class="pr-note" id="pr-note"></p>
+    </section>
+  </main>
+  <script src="practice.js?v=20261112a" defer></script>
+</body>
+</html>

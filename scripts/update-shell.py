@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSET_VERSION = '20261112c'
+ASSET_VERSION = '20261112d'
 DATA_VERSION = ('2.460', 'Global/TWN 用戶端 2.460.5829，2026-11-12')
 
 

@@ -249,5 +249,12 @@
   });
   systemDark.addEventListener?.('change', paintTheme);
   document.getElementById('skill-config-open')?.before(themeButton);
+  // Practice ground (Aran for now): move a character, cast with your keys, count hits over 120 s.
+  const practiceLink = document.createElement('a');
+  practiceLink.className = 'theme-toggle practice-link';
+  practiceLink.href = 'practice.html';
+  practiceLink.textContent = '練習場';
+  practiceLink.title = '狂狼勇士練習場：操作角色放招並統計 120 秒段數';
+  themeButton.before(practiceLink);
   paintTheme();
 })();

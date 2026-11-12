@@ -350,3 +350,4 @@ body.view-list .skill-card.is-collapsed .skill-title { padding-right: 30px; }
 @media (max-width: 680px) { .theme-toggle { padding: 7px 9px; } .theme-toggle span { display: none; } }
 :root[data-theme="dark"] .sc-main,
 :root[data-theme="dark"] .sc-main h3 { color: #121624; }
+.practice-link { text-decoration: none; }
