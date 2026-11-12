@@ -43,16 +43,30 @@ def token(card):
     return m.group(1) if m else None
 
 
+SUMMARY_HTML = re.compile(r'(?:Enhancement core damage up per level: \d+(?:<br>Level \d+ bonus[^<]*){0,2}|強化核心每級：[^<]*(?:<br>Lv\.\d+ 追加：[^<]*){0,2})')
+NL = chr(10)
+SUMMARY_TEXT = re.compile(r'(?:enhancement core damage up per level: \d+(?:\nlevel \d+ bonus[^\n"]*){0,2}|強化核心每級：[^\n"]*(?:\nlv\.\d+ 追加：[^\n"]*){0,2})')
+
+
+def localize_summary(card, entry):
+    """Per-level / Lv.20 / Lv.40 bonus lines, written in Chinese from the table fields (was raw English field text)."""
+    zh = entry['summary_zh']
+    head, body, tail = re.match(r'([\s\S]*<p class="skill-desc">)([\s\S]*?)(</p>[\s\S]*)', card).groups()
+    body, n = SUMMARY_HTML.subn(lambda m: esc(zh).replace(NL, '<br>'), body, count=1)
+    assert n == 1, ('summary', entry['vcore_code'])
+    card = head + body + tail
+    head, attr, tail = re.match(r'([\s\S]*?data-text=")([^"]*)("[\s\S]*)', card).groups()
+    attr, n = SUMMARY_TEXT.subn(lambda m: esc(zh).lower(), attr, count=1)
+    assert n == 1, ('search summary', entry['vcore_code'])
+    return head + attr + tail
+
+
 def refresh_existing(card, entry):
     old_meta, meta = esc(entry['old_meta']), esc(new_meta(entry, entry['old_meta']))
     if meta not in card:
         assert card.count(old_meta) == 1, ('meta', entry['vcore_code'])
         card = card.replace(old_meta, meta)
-    if entry['old_summary'] != entry['summary']:
-        old_body, body = esc(entry['old_summary']).replace('\n', '<br>'), esc(entry['summary']).replace('\n', '<br>')
-        if body not in card:
-            assert card.count(old_body) == 1, ('summary', entry['vcore_code'])
-            card = card.replace(old_body, body).replace(esc(entry['old_summary']).lower(), esc(entry['summary']).lower())
+    card = localize_summary(card, entry)
     old_name, name = esc(entry['old_name']), esc(entry['name'])
     if old_name != name and f'<h3>{name}</h3>' not in card:
         # 2.460 dropped the sub-name suffix and names each row after the single skill it enhances.
@@ -79,7 +93,7 @@ def new_card(entry, cards):
         assert (ROOT / icon_file).stat().st_size > 100, icon_file
         icon = f'<div class="skill-icon" aria-hidden="true"><img src="{esc(icon_file)}" alt="{name}" loading="lazy"></div>'
         dtype, pill = 'active', '主動'
-    full, summary = entry['description_full'], entry['summary']
+    full, summary = entry['description_full'], entry['summary_zh']
     searchable = ' '.join([entry['name'], entry['skill_code'], f'{pill} lv.200 {pill} lv.200 強化核心 職業專屬 v_matrix v_core_enhancement',
                            entry['vcore_code'], full, summary + '\n' + full, entry['core_icon']]).lower()
     meta = f"V 強化核心 {entry['group']} / 職業專屬 / VSkill / {entry['index']} / Open Lv 200 / MaxLv {entry['max_level']} / CoreLv 60"

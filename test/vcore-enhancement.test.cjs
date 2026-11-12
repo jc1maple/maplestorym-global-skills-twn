@@ -28,12 +28,15 @@ test('every 2.460 enhancement-core row has exactly one card with its new index a
   const soul = data.existing.find(e => e.vcore_code === 'VCore_SoulMaster_SolarSlash');
   assert.deepEqual([soul.old_name, soul.name], ['烈日狂斬/月光切割 (劍術)', '烈日狂斬']);
   for (const entry of data.new) {
-    assert(entry.name && entry.description_full && entry.summary.startsWith('Enhancement core damage up per level:'), entry.vcore_code);
+    assert(entry.name && entry.description_full && entry.summary_zh.startsWith('強化核心每級：技能傷害 +'), entry.vcore_code);
     if (!entry.has_base_card) assert(fs.statSync(path.join(root, 'icons', entry.core_icon + '.png')).size > 100, entry.core_icon);
   }
   for (const src of new Set(boost.flatMap(c => [...c.matchAll(/<img src="([^"]+)"/g)].map(m => m[1])))) {
     assert(fs.existsSync(path.join(root, src)), src);
   }
+  // Bonus lines are localized; no raw English field text is left in cards or search text.
+  assert(!/enhancement core damage up per level/i.test(html));
+  assert.equal(boost.filter(c => /<p class="skill-desc">強化核心每級：技能傷害 \+\d%<br>Lv\.20 追加：(物理|魔法)傷害 \+10%<br>Lv\.40 追加：無視防禦 \+15%<br>/.test(c)).length, 583);
   execFileSync('python', ['scripts/update-vcore-enhancement.py', '--check'], { cwd: root });
 });
 

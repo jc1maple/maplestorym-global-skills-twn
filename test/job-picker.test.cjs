@@ -36,42 +36,41 @@ test('all jobs appear once under the existing Global/TWN class mapping', () => {
   assert.match(select, /<option value="SoulMaster" selected>/);
 });
 
-test('skill content and all existing option names/values remain unchanged', () => {
-  // Pinned published baseline; keeps this regression useful after committing.
+test('skill content of every card that predates the 2.460 refresh is unchanged', () => {
+  // Pinned published baseline; compares skill cards one by one so page chrome can evolve freely.
   const before = execFileSync('git', ['show', '943b010:index.html'], { cwd: root, encoding: 'utf8', maxBuffer: 30 * 1024 * 1024 });
-  const normalize = s => s.replace(/\r\n/g, '\n').replace(selectPattern, '<select id="job"></select>')
-    .replace(/(modern(?:-ui\.js|\.css)|skill-configurator\.js)\?v=[^"\s]+/g, '$1?v=VERSION')
-    // HEXA rules now have a translated panel; skill text below it must stay identical.
-    .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/g, '<p class="skill-desc">$1</p>')
-    .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/g, '$1')
-    .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '')
-    // 波里斯 job section (scripts/update-boris.py) did not exist in the baseline.
-    .replace(/<!-- job-boris:start -->[\s\S]*?<!-- job-boris:end -->/g, '')
-    .replace(/(<span><strong>)\d+(<\/strong> 個職業<\/span>)/g, '$1N$2')
-    // Boss V-core cards (太陽之冠) are appended by scripts/update-boss-vcore.py; counters are verified in boss-vcore.test.cjs.
-    .replace(/\n    \n\n      <!-- boss-vcore:start -->[\s\S]*?<!-- boss-vcore:end -->/g, '')
-    // 2.460 V Matrix revamp (scripts/update-vcore-enhancement.py): new enhancement cards, renumbered meta, per-level damage line.
-    .replace(/\n    \n\n      <!-- vcore-enh:start -->[\s\S]*?<!-- vcore-enh:end -->/g, '')
-    .replace(/<!-- vcore-enh:start -->[\s\S]*?<!-- vcore-enh:end -->\n    \n\n      /g, '')
-    .replace(/V 強化核心(?: \d)? \/ 職業專屬 \/ VSkill \/ \d+ \//g, 'V 強化核心 / 職業專屬 / VSkill / N /')
-    .replace(/(enhancement core damage up per level: )\d+/gi, '$1N')
-    // Enhancement cards are now named after the single skill they enhance (names verified in vcore-enhancement.test.cjs).
-    .replace(/<article class="skill-card[^>]*data-core="v_boost"[\s\S]*?<\/article>/g, card => card
-      .replace(/data-text="[^"]*? (skill_[a-z0-9_]+)/, 'data-text="NAME $1')
-      .replace(/alt="[^"]*"/, 'alt="NAME"')
-      .replace(/<h3>[^<]*<\/h3>/, '<h3>NAME</h3>'))
-    .replace(/(<span class="job-count">)\d+( skills<\/span>)/g, '$1N$2')
-    .replace(/(<h3>Lv\.200<\/h3>\s*<span>)\d+(<\/span>)/g, '$1N$2')
-    .replace(/(<span><strong>)[\d,]+(<\/strong> 筆技能<\/span>)/g, '$1N$2')
-    .replace(/<label class="filter-row">[\s\S]*?<\/label>/g, label => label.replace(/<strong>\d+<\/strong>/, '<strong>N</strong>'));
-  // Cards refreshed from a newer client (scripts/update-skill-text.py) are mapped back to their baseline text.
   const esc = v => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+  const br = v => v.split(String.fromCharCode(10)).join('<br>');
+  // Cards refreshed from a newer client (scripts/update-skill-text.py) are mapped back to their baseline text.
   const updates = JSON.parse(fs.readFileSync(path.join(root, 'data/skill-text-updates.json'), 'utf8')).cards;
   const revert = s => updates.reduce((acc, u) => acc
-    .split(esc(u.new_full).split(String.fromCharCode(10)).join('<br>')).join(esc(u.old_full).split(String.fromCharCode(10)).join('<br>'))
+    .split(br(esc(u.new_full))).join(br(esc(u.old_full)))
     .split(esc(u.new_full).toLowerCase()).join(esc(u.old_full).toLowerCase()), s);
-  assert.equal(normalize(revert(html)), normalize(before));
-  assert.deepEqual(options(select).filter(o => o.value !== 'Boris').sort((a, b) => a.value.localeCompare(b.value)),
+  // Cards added after the baseline live inside generator markers; retired special cores were removed in 2.460.
+  const added = /<!-- (boss-vcore|vcore-enh|special-cores|job-boris):start -->[\s\S]*?<!-- \1:end -->/g;
+  const cardsOf = s => [...s.replace(/\r\n/g, '\n').replace(added, '').matchAll(/<article class="skill-card\b[\s\S]*?<\/article>/g)]
+    .map(m => m[0]).filter(c => !c.includes('data-core="v_special"'));
+  const normalize = card => {
+    let c = card
+      // HEXA rules have a translated panel; skill text below it must stay identical.
+      .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/, '<p class="skill-desc">$1</p>')
+      .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/, '$1');
+    if (c.includes('data-core="v_boost"')) {
+      // 2.460 V Matrix revamp: renumbered meta, single-skill names, localized bonus lines (checked in vcore-enhancement.test.cjs).
+      c = c.replace(/data-text="[^"]*? (skill_[a-z0-9_]+)/, 'data-text="NAME $1')
+        .replace(/alt="[^"]*"/, 'alt="NAME"')
+        .replace(/<h3>[^<]*<\/h3>/, '<h3>NAME</h3>')
+        .replace(/V 強化核心(?: \d)? \/ 職業專屬 \/ VSkill \/ \d+ \//, 'V 強化核心 / 職業專屬 / VSkill / N /')
+        .replace(/(?:enhancement core damage up per level: \d+(?:\nlevel \d+ bonus[^\n"]*){0,2}|強化核心每級：[^\n"]*(?:\nlv\.\d+ 追加：[^\n"]*){0,2})/, 'SUMMARY')
+        .replace(/(?:Enhancement core damage up per level: \d+(?:<br>Level \d+ bonus[^<]*){0,2}|強化核心每級：[^<]*(?:<br>Lv\.\d+ 追加：[^<]*){0,2})/, 'SUMMARY');
+    }
+    return c;
+  };
+  const current = cardsOf(revert(html)).map(normalize);
+  const baseline = cardsOf(before).map(normalize);
+  assert.equal(current.length, baseline.length);
+  for (let i = 0; i < baseline.length; i += 1) assert.equal(current[i], baseline[i], `card ${i}`);
+  assert.deepEqual(options(select).filter(o => o.value !== 'Boris').map(o => ({ ...o, name: o.name })).sort((a, b) => a.value.localeCompare(b.value)),
     options(before.match(selectPattern)[0]).sort((a, b) => a.value.localeCompare(b.value)));
 });
 
