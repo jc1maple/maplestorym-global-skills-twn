@@ -22,6 +22,16 @@ test('波里斯 has its 37 skill-tree cards, grouped by stage, with icons', () =
     assert(fs.statSync(path.join(root, skill.icon_file)).size > 100, skill.icon_file);
     assert.equal(cards.filter(c => c.includes(`<h3>${skill.name}</h3>`) && c.includes(` ${skill.code.toLowerCase()} `)).length, 1, skill.code);
   }
+  const previews = data.skills.filter(s => s.preview);
+  assert.equal(previews.length, 11);
+  for (const { preview: p, code } of previews) {
+    const sheet = fs.readFileSync(path.join(root, p.preview));
+    assert.equal(require('node:crypto').createHash('sha256').update(sheet).digest('hex').slice(0, 12), p.asset_hash, code);
+    assert.deepEqual([sheet.readUInt32BE(16), sheet.readUInt32BE(20)], [p.sheet_columns * p.frame_width, p.sheet_rows * p.frame_height], code);
+    assert.equal(p.durations_ms.length, p.frame_count, code);
+    assert(p.source_prefabs.every(src => src.includes('/character/skill/boris/')), code);
+    assert(section.includes(`data-preview-src="${p.preview}?v=${p.asset_hash}"`), code);
+  }
   assert(section.includes('技能傷害: 530%'));
   assert(section.includes('物理攻擊力增加: 25%'));
   assert(section.includes('迴避率: 15%'));

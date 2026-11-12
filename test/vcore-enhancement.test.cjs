@@ -21,6 +21,12 @@ test('every 2.460 enhancement-core row has exactly one card with its new index a
     assert.match(entry.group, /^[1-6]?$/);
   }
   assert.equal(new Set(metas.map(m => m.split(' / ')[3])).size, 584);
+  // Card titles follow CoreLanguageName: one skill per row, no sub-name suffix such as "(劍術)".
+  const titles = new Map(boost.map(c => [c.match(/class="skill-meta">(.*?)</)[1].split(' / ')[3], c.match(/<h3>(.*?)<\/h3>/)[1]]));
+  const unescape = v => v.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
+  for (const entry of [...data.existing, ...data.new]) assert.equal(unescape(titles.get(entry.index)), entry.name, entry.vcore_code);
+  const soul = data.existing.find(e => e.vcore_code === 'VCore_SoulMaster_SolarSlash');
+  assert.deepEqual([soul.old_name, soul.name], ['烈日狂斬/月光切割 (劍術)', '烈日狂斬']);
   for (const entry of data.new) {
     assert(entry.name && entry.description_full && entry.summary.startsWith('Enhancement core damage up per level:'), entry.vcore_code);
     if (!entry.has_base_card) assert(fs.statSync(path.join(root, 'icons', entry.core_icon + '.png')).size > 100, entry.core_icon);

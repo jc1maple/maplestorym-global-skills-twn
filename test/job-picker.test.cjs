@@ -55,6 +55,11 @@ test('skill content and all existing option names/values remain unchanged', () =
     .replace(/<!-- vcore-enh:start -->[\s\S]*?<!-- vcore-enh:end -->\n    \n\n      /g, '')
     .replace(/V 強化核心(?: \d)? \/ 職業專屬 \/ VSkill \/ \d+ \//g, 'V 強化核心 / 職業專屬 / VSkill / N /')
     .replace(/(enhancement core damage up per level: )\d+/gi, '$1N')
+    // Enhancement cards are now named after the single skill they enhance (names verified in vcore-enhancement.test.cjs).
+    .replace(/<article class="skill-card[^>]*data-core="v_boost"[\s\S]*?<\/article>/g, card => card
+      .replace(/data-text="[^"]*? (skill_[a-z0-9_]+)/, 'data-text="NAME $1')
+      .replace(/alt="[^"]*"/, 'alt="NAME"')
+      .replace(/<h3>[^<]*<\/h3>/, '<h3>NAME</h3>'))
     .replace(/(<span class="job-count">)\d+( skills<\/span>)/g, '$1N$2')
     .replace(/(<h3>Lv\.200<\/h3>\s*<span>)\d+(<\/span>)/g, '$1N$2')
     .replace(/(<span><strong>)[\d,]+(<\/strong> 筆技能<\/span>)/g, '$1N$2')

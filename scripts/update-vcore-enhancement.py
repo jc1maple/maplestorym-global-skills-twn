@@ -53,6 +53,14 @@ def refresh_existing(card, entry):
         if body not in card:
             assert card.count(old_body) == 1, ('summary', entry['vcore_code'])
             card = card.replace(old_body, body).replace(esc(entry['old_summary']).lower(), esc(entry['summary']).lower())
+    old_name, name = esc(entry['old_name']), esc(entry['name'])
+    if old_name != name and f'<h3>{name}</h3>' not in card:
+        # 2.460 dropped the sub-name suffix and names each row after the single skill it enhances.
+        assert card.count(f'<h3>{old_name}</h3>') == 1 and card.count(f'alt="{old_name}"') == 1, ('name', entry['vcore_code'])
+        prefix = f'data-text="{old_name.lower()} '
+        assert prefix in card, ('search name', entry['vcore_code'])
+        card = card.replace(f'<h3>{old_name}</h3>', f'<h3>{name}</h3>').replace(f'alt="{old_name}"', f'alt="{name}"')
+        card = card.replace(prefix, f'data-text="{name.lower()} ', 1)
     return card
 
 

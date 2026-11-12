@@ -8,6 +8,7 @@ Boris has a skill tree only (Lv.3-215): no V Matrix, HEXA or Stella cards.
     python scripts/update-boris.py --check  # exit 1 if index.html is not up to date
 """
 import argparse
+import hashlib
 import html
 import importlib.util
 import json
@@ -34,9 +35,20 @@ def card(skill, stage_label):
     searchable = ' '.join([skill['name'], skill['code'], pill, stage_label, pill + ' ', '職業專屬 skill_tree job_skill_set ',
                            desc, desc, skill['icon_name']]).lower()
     meta = f"技能樹 / 職業專屬 / {skill['layer']} / {skill['ui_sort']} / Open Lv {skill['open_level']} / MaxLv 1"
+    preview = skill.get('preview')
+    icon_attrs = 'class="skill-icon" aria-hidden="true"'
+    if preview:
+        src = esc(f"{preview['preview']}?v={preview['asset_hash']}")
+        icon_attrs = (
+            f'class="skill-icon has-preview" aria-hidden="true" title="技能動畫預覽" data-preview-src="{src}" data-preview-sources="{src}" '
+            f'data-preview-kind="spritesheet" data-preview-frames="{preview["frame_count"]}" data-preview-width="{preview["frame_width"]}" '
+            f'data-preview-height="{preview["frame_height"]}" data-preview-cols="{preview["sheet_columns"]}" data-preview-rows="{preview["sheet_rows"]}" '
+            f'data-preview-durations="{",".join(str(d) for d in preview["durations_ms"])}" data-preview-format="{esc(preview["format"])}" '
+            f'data-preview-animation="{esc(preview["animation"])}"'
+        )
     return f'''      <article class="skill-card is-collapsed" data-stage="{skill['stage']}" data-type="{skill['type']}" data-core="none" data-scope="job" data-text="{esc(searchable)}" role="button" tabindex="0" aria-expanded="false">
         <div class="skill-top">
-          <div class="skill-icon" aria-hidden="true"><img src="{esc(skill['icon_file'])}" alt="{name}" loading="lazy"></div>
+          <div {icon_attrs}><img src="{esc(skill['icon_file'])}" alt="{name}" loading="lazy"></div>
           <div class="skill-title">
             <h3>{name}</h3>
             <div class="skill-meta">{esc(meta)}</div>
@@ -102,6 +114,9 @@ def main():
     data = json.loads((ROOT / 'data/boris-skills.json').read_text(encoding='utf8'))
     for skill in data['skills']:
         assert (ROOT / skill['icon_file']).stat().st_size > 100, skill['icon_file']
+        if skill.get('preview'):
+            sheet = (ROOT / skill['preview']['preview']).read_bytes()
+            assert hashlib.sha256(sheet).hexdigest()[:12] == skill['preview']['asset_hash'], skill['preview']['preview']
     path = ROOT / 'index.html'
     before = path.read_text(encoding='utf8')
     after = update(before, data)
