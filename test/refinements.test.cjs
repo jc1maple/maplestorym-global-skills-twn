@@ -85,3 +85,12 @@ test('skills come first: compact showcase, readable meta, grouped Lv.200, search
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+test('animation previews are stored once and every reference resolves', () => {
+  execFileSync('python', ['scripts/dedupe-previews.py', '--check'], { cwd: root });
+  const refs = new Set([...html.matchAll(/animations\/[^"?&\s<>]+\.(?:png|mp4|webp)/g)].map(m => m[0]));
+  assert(refs.size > 1000);
+  for (const ref of refs) assert(fs.existsSync(path.join(root, ref)), ref);
+  assert(fs.existsSync(path.join(root, 'animations/common/V_SpiderinMirror_01.png')));
+  assert(!fs.existsSync(path.join(root, 'animations/soulmaster/V_SpiderinMirror_01.png')));
+});

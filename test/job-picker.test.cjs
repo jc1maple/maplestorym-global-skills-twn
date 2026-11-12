@@ -52,6 +52,8 @@ test('skill content of every card that predates the 2.460 refresh is unchanged',
     .map(m => m[0]).filter(c => !c.includes('data-core="v_special"'));
   const normalize = card => {
     let c = card
+      // Identical previews are stored once under animations/common (scripts/dedupe-previews.py); the ?v= hash still pins the content.
+      .replace(/animations\/[a-z0-9_]+\//g, 'animations/DIR/')
       // HEXA rules have a translated panel; skill text below it must stay identical.
       .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/, '<p class="skill-desc">$1</p>')
       .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/, '$1');
