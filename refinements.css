@@ -210,3 +210,143 @@ body.view-list .skill-card.is-collapsed .skill-title { padding-right: 30px; }
 .type-legend > span[role="button"]:hover { border-color: var(--line); }
 .type-legend > span[role="button"][aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
 .type-legend > span[role="button"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* --- Skill configurator: site chrome around the in-game key pad ------------------------------- */
+.sc-shell { background: rgba(17, 24, 46, 0.72); }
+.sc-app { background: var(--paper); border-radius: 20px; color: var(--ink); font-family: inherit; }
+.sc-topbar { background: linear-gradient(120deg, var(--navy), var(--navy-2)); border-bottom: 0; min-height: 60px; }
+.sc-title h2 { font-size: 1.2rem; letter-spacing: -0.02em; }
+.sc-job-chip { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); border-radius: 999px; }
+.sc-tabs { background: var(--paper-bright); border-bottom: 1px solid var(--line); }
+.sc-tab { color: var(--ink-soft); }
+.sc-tab[aria-selected="true"] { border-bottom-color: var(--blue); color: var(--blue); }
+.sc-workspace, .sc-library { border-radius: 16px; }
+.sc-filter.is-active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.sc-footer { background: var(--paper-bright); border-top: 1px solid var(--line); }
+.sc-button {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: none;
+  color: var(--ink);
+  font-weight: 700;
+  text-shadow: none;
+}
+.sc-button.is-suggestion { background: #fff; border-color: #c9d3ff; color: var(--blue); }
+.sc-button.is-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.sc-button.is-danger { background: #fff; border-color: #e6b9c4; color: #c63d5d; }
+.sc-button:hover { filter: none; border-color: var(--ink-soft); }
+.sc-button.is-primary:hover { background: #3257e6; border-color: #3257e6; }
+
+/* Desktop: the note and play-guide panels sit beside the key pad instead of under it (the right half was empty). */
+@media (min-width: 1280px) {
+  .sc-workspace .sc-config-stack.sc-mobile-config-stack {
+    align-items: start;
+    column-gap: 16px;
+    grid-template-columns: 495px minmax(0, 1fr);
+    max-width: none;
+    width: 100%;
+  }
+  .sc-mobile-config-stack > .sc-mobile-frame { grid-column: 1; grid-row: 1 / span 2; }
+  .sc-mobile-config-stack > .sc-slot-note-panel,
+  .sc-mobile-config-stack > .sc-job-guide-panel { grid-column: 2; }
+}
+
+/* --- Dark theme (html[data-theme="dark"], set before first paint by the inline head script) -------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0d111f;
+  --paper-bright: #151a2c;
+  --panel: #1a2035;
+  --ink: #eef0f8;
+  --ink-soft: #c5cade;
+  --muted: #939ab0;
+  --line: #2a3250;
+  --line-dark: rgba(255, 255, 255, 0.10);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.55);
+}
+:root[data-theme="dark"] body { background: var(--paper); color: var(--ink); }
+:root[data-theme="dark"] header.page-header { background: rgba(13, 17, 31, 0.92); border-bottom-color: rgba(255, 255, 255, 0.08); }
+:root[data-theme="dark"] .site-brand h1,
+:root[data-theme="dark"] .content-toolbar strong,
+:root[data-theme="dark"] .stage-header h3,
+:root[data-theme="dark"] .skill-title h3,
+:root[data-theme="dark"] .skill-card.is-collapsed .skill-title h3 { color: var(--ink); }
+:root[data-theme="dark"] .header-meta > span,
+:root[data-theme="dark"] .control-field,
+:root[data-theme="dark"] .search-field kbd,
+:root[data-theme="dark"] .job-picker-menu,
+:root[data-theme="dark"] .job-picker-group-label,
+:root[data-theme="dark"] .job-picker-option,
+:root[data-theme="dark"] .filter-close,
+:root[data-theme="dark"] .reset-button,
+:root[data-theme="dark"] .filter-row,
+:root[data-theme="dark"] .view-switcher,
+:root[data-theme="dark"] .stage-header::after,
+:root[data-theme="dark"] .stage-header span,
+:root[data-theme="dark"] .skill-animation-controls button,
+:root[data-theme="dark"] .toolbar-stages button,
+:root[data-theme="dark"] .empty,
+:root[data-theme="dark"] .filter-sidebar,
+:root[data-theme="dark"] .job-picker-trigger { background: var(--panel); border-color: var(--line); color: var(--ink); }
+:root[data-theme="dark"] .control-field input,
+:root[data-theme="dark"] .control-field select { background: transparent; color: var(--ink); }
+:root[data-theme="dark"] .job-picker-option:hover,
+:root[data-theme="dark"] .job-picker-option.is-active,
+:root[data-theme="dark"] .filter-row:hover,
+:root[data-theme="dark"] .reset-button:hover,
+:root[data-theme="dark"] .view-switcher button.is-active { background: #252d4a; color: var(--ink); }
+:root[data-theme="dark"] .filter-row:has(input:checked) { background: #24306a; border-color: #4a5fd0; color: #dfe5ff; }
+:root[data-theme="dark"] .skill-card { background: var(--panel); border-color: var(--line); }
+:root[data-theme="dark"] .skill-icon { background: #0f1424; }
+:root[data-theme="dark"] .skill-divider { background: var(--line); }
+:root[data-theme="dark"] .skill-desc { color: var(--ink-soft); }
+:root[data-theme="dark"] .stat-block { background: rgba(255, 255, 255, 0.05); }
+:root[data-theme="dark"] .type-pill { background: rgba(63, 102, 255, 0.18); border-color: rgba(63, 102, 255, 0.35); color: #b9c6ff; }
+:root[data-theme="dark"] .skill-card[data-type="buff"] .type-pill { background: rgba(255, 140, 83, 0.16); border-color: rgba(255, 140, 83, 0.35); color: #ffc3a3; }
+:root[data-theme="dark"] .skill-card[data-type="passive"] .type-pill { background: rgba(53, 184, 143, 0.16); border-color: rgba(53, 184, 143, 0.35); color: #a4e6cf; }
+:root[data-theme="dark"] .hexa-upgrade { background: #1c2445; border-color: #323d73; color: var(--ink-soft); }
+:root[data-theme="dark"] .hexa-upgrade h4 { color: #a9b6ff; }
+:root[data-theme="dark"] .hexa-levels thead { background: #232c52; }
+:root[data-theme="dark"] .hexa-levels summary,
+:root[data-theme="dark"] .hexa-levels caption { color: var(--ink-soft); }
+:root[data-theme="dark"] .skill-subhead::after { background: var(--line); }
+:root[data-theme="dark"] .type-legend > span[role="button"][aria-pressed="true"] { background: var(--blue); border-color: var(--blue); }
+:root[data-theme="dark"] .skill-icon[data-core-number]::before { background: var(--blue); border-color: var(--panel); }
+/* configurator: dark chrome, but the work area stays a light "game screen" island (it mirrors the in-game UI) */
+:root[data-theme="dark"] .sc-app { background: var(--paper); }
+:root[data-theme="dark"] .sc-main,
+:root[data-theme="dark"] .sc-submit-overlay {
+  color-scheme: light;
+  --ink: #121624;
+  --ink-soft: #343b4e;
+  --muted: #747b8c;
+  --line: #ddd9cf;
+  --panel: #ffffff;
+  --paper: #f2efe8;
+  --paper-bright: #faf9f5;
+  --navy: #11182e;
+}
+:root[data-theme="dark"] .sc-footer .sc-button { background: var(--panel); border-color: var(--line); color: var(--ink); }
+:root[data-theme="dark"] .sc-footer .sc-button.is-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+:root[data-theme="dark"] .sc-footer .sc-button.is-danger { color: #ff9db2; }
+:root[data-theme="dark"] .sc-footer .sc-button.is-suggestion { color: #a9b6ff; }
+
+/* theme toggle */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 7px 11px;
+  white-space: nowrap;
+}
+.theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+@media (max-width: 680px) { .theme-toggle { padding: 7px 9px; } .theme-toggle span { display: none; } }
+:root[data-theme="dark"] .sc-main,
+:root[data-theme="dark"] .sc-main h3 { color: #121624; }

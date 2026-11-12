@@ -227,4 +227,27 @@
   };
   document.addEventListener('skills:filter-applied', syncLegend);
   syncLegend();
+
+  // --- 8. Light / dark theme: follows the system until the visitor picks one ------------------------------
+  const themeKey = 'skill-theme';
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const savedTheme = () => { try { return localStorage.getItem(themeKey); } catch { return null; } };
+  const currentTheme = () => savedTheme() || (systemDark.matches ? 'dark' : 'light');
+  const themeButton = document.createElement('button');
+  themeButton.type = 'button';
+  themeButton.className = 'theme-toggle';
+  const paintTheme = () => {
+    const theme = currentTheme();
+    document.documentElement.dataset.theme = theme;
+    themeButton.innerHTML = theme === 'dark' ? '☀<span> 淺色</span>' : '☾<span> 深色</span>';
+    themeButton.setAttribute('aria-label', theme === 'dark' ? '切換為淺色模式' : '切換為深色模式');
+    themeButton.setAttribute('aria-pressed', String(theme === 'dark'));
+  };
+  themeButton.addEventListener('click', () => {
+    try { localStorage.setItem(themeKey, currentTheme() === 'dark' ? 'light' : 'dark'); } catch { /* private mode: session only */ document.documentElement.dataset.theme = currentTheme() === 'dark' ? 'light' : 'dark'; }
+    paintTheme();
+  });
+  systemDark.addEventListener?.('change', paintTheme);
+  document.getElementById('skill-config-open')?.before(themeButton);
+  paintTheme();
 })();

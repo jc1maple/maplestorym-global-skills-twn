@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSET_VERSION = '20261112b'
+ASSET_VERSION = '20261112c'
 DATA_VERSION = ('2.460', 'Global/TWN 用戶端 2.460.5829，2026-11-12')
 
 
@@ -24,6 +24,11 @@ def update(text):
     text = re.sub(r'\n  <link rel="stylesheet" href="refinements\.css\?v=[^"]*">', '', text)
     anchor = re.search(r'  <link rel="stylesheet" href="skill-configurator\.css\?v=[^"]*">', text)
     text = text[:anchor.end()] + '\n  ' + css + text[anchor.end():]
+
+    # Theme is decided before first paint (saved choice, else the system setting) so dark pages never flash white.
+    boot = "<script>try{document.documentElement.dataset.theme=localStorage.getItem('skill-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>"
+    if boot not in text:
+        text = text.replace(css, css + chr(10) + '  ' + boot, 1)
 
     js = f'<script src="refinements.js?v={ASSET_VERSION}" defer></script>'
     text = re.sub(r'\n  <script src="refinements\.js\?v=[^"]*" defer></script>', '', text)
