@@ -46,6 +46,11 @@ test('skill content and all existing option names/values remain unchanged', () =
     .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '')
     // Boss V-core cards (太陽之冠) are appended by scripts/update-boss-vcore.py; counters are verified in boss-vcore.test.cjs.
     .replace(/\n    \n\n      <!-- boss-vcore:start -->[\s\S]*?<!-- boss-vcore:end -->/g, '')
+    // 2.460 V Matrix revamp (scripts/update-vcore-enhancement.py): new enhancement cards, renumbered meta, per-level damage line.
+    .replace(/\n    \n\n      <!-- vcore-enh:start -->[\s\S]*?<!-- vcore-enh:end -->/g, '')
+    .replace(/<!-- vcore-enh:start -->[\s\S]*?<!-- vcore-enh:end -->\n    \n\n      /g, '')
+    .replace(/V 強化核心(?: \d)? \/ 職業專屬 \/ VSkill \/ \d+ \//g, 'V 強化核心 / 職業專屬 / VSkill / N /')
+    .replace(/(enhancement core damage up per level: )\d+/gi, '$1N')
     .replace(/(<span class="job-count">)\d+( skills<\/span>)/g, '$1N$2')
     .replace(/(<h3>Lv\.200<\/h3>\s*<span>)\d+(<\/span>)/g, '$1N$2')
     .replace(/(<span><strong>)[\d,]+(<\/strong> 筆技能<\/span>)/g, '$1N$2')
