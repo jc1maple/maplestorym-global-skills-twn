@@ -43,7 +43,13 @@ test('skill content and all existing option names/values remain unchanged', () =
     // HEXA rules now have a translated panel; skill text below it must stay identical.
     .replace(/<div class="skill-desc"><!-- hexa-upgrade:start -->[\s\S]*?<!-- hexa-upgrade:end -->([\s\S]*?)<\/div>(?=\s*<\/article>)/g, '<p class="skill-desc">$1</p>')
     .replace(/(<p class="skill-desc">)HEXA core enhance type: [^<]+<br>(?:Lv [^<]+<br>)?/g, '$1')
-    .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '');
+    .replace("        if (event.target instanceof Element && event.target.closest('.skill-desc')) return;\n", '')
+    // Boss V-core cards (太陽之冠) are appended by scripts/update-boss-vcore.py; counters are verified in boss-vcore.test.cjs.
+    .replace(/\n    \n\n      <!-- boss-vcore:start -->[\s\S]*?<!-- boss-vcore:end -->/g, '')
+    .replace(/(<span class="job-count">)\d+( skills<\/span>)/g, '$1N$2')
+    .replace(/(<h3>Lv\.200<\/h3>\s*<span>)\d+(<\/span>)/g, '$1N$2')
+    .replace(/(<span><strong>)[\d,]+(<\/strong> 筆技能<\/span>)/g, '$1N$2')
+    .replace(/<label class="filter-row">[\s\S]*?<\/label>/g, label => label.replace(/<strong>\d+<\/strong>/, '<strong>N</strong>'));
   assert.equal(normalize(html), normalize(before));
   assert.deepEqual(options(select).sort((a, b) => a.value.localeCompare(b.value)),
     options(before.match(selectPattern)[0]).sort((a, b) => a.value.localeCompare(b.value)));
