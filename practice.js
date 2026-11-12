@@ -2,11 +2,11 @@
    the figure, the reach of each skill and the dummy are simplified stand-ins, not client data. */
 (async () => {
   'use strict';
-  const data = await (await fetch('data/aran-practice.json?v=20261112a')).json();
+  const data = await (await fetch('data/aran-practice.json?v=20261112b')).json();
   const byId = Object.fromEntries(data.skills.map(skill => [skill.id, skill]));
   document.getElementById('pr-version').textContent = data.source;
   document.getElementById('pr-note').textContent =
-    '動作時間、冷卻、段數與傷害 % 取自用戶端資料；角色外型、技能距離與木樁為簡化示意。自動追加的瑪哈一擊（每 2 秒）與三式後的白虎會自動觸發，其餘追加攻擊未模擬。';
+    '動作時間、冷卻、段數、傷害 % 與各技能的前後攻擊距離取自用戶端資料（距離單位換算為假設值）。已模擬：三式後的白虎、瑪哈一擊（每 2 秒）、極冰風暴後 10 秒內比耀德命中追加的恐狼詛咒（每波 90 段，最多 32 波）、最終勝者第三擊 192 段與 30 秒冷卻。鬥氣波動的攻擊間隔尚未解出，預設不計；凍結地帶、冰雪波動、金色閃光的持續傷害未模擬。';
 
   // --- castable slots: combos are one key that walks through its steps -----------------------------------
   const SLOTS = [
@@ -21,17 +21,40 @@
     { id: 'spider', key: 'Digit4', steps: ['spider'] },
     { id: 'origin', key: 'Digit5', steps: ['origin'] },
   ].filter(slot => slot.steps.every(step => byId[step]));
+  // Keys: 1) the layout saved in the skill configurator for 狂狼勇士, 2) keys re-bound here, 3) defaults.
+  const LABEL_TO_CODE = { Tab: 'Tab', Delete: 'Delete', Enter: 'Enter', 'L.Alt': 'AltLeft', 'R.Alt': 'AltRight', PgDn: 'PageDown', PgUp: 'PageUp',
+    'R.Ctrl': 'ControlRight', 'L.Ctrl': 'ControlLeft', 'R.Shift': 'ShiftRight', 'L.Shift': 'ShiftLeft', Space: 'Space', Home: 'Home', End: 'End', Insert: 'Insert' };
+  const codeOfLabel = label => LABEL_TO_CODE[label] || (/^[A-Za-z]$/.test(label) ? 'Key' + label.toUpperCase() : /^[0-9]$/.test(label) ? 'Digit' + label : /^F\d{1,2}$/.test(label) ? label : null);
+  const stemOf = value => String(value || '').split('|')[0].toLowerCase().replace(/_\d+$/, '');
+  let configuratorKeys = 0;
+  try {
+    const config = (JSON.parse(localStorage.getItem('maplestorym-skill-config-v2') || '{}') || {}).Aran;
+    if (config) {
+      const assigned = [];
+      (config.pc || []).forEach((page, p) => (page || []).forEach((value, i) => assigned.push([value, config.keys?.pc?.[p]?.[i]])));
+      (config.functions || []).forEach((value, i) => assigned.push([value, config.keys?.functions?.[i]]));
+      for (const [value, label] of assigned) {
+        const code = value && label && codeOfLabel(label);
+        if (!code) continue;
+        const stem = stemOf(value);
+        const slot = SLOTS.find(s => s.steps.some(step => { const own = stemOf(byId[step].code); return own === stem || own.startsWith(stem + '_') || stem.startsWith(own); }));
+        if (slot && !slot.fromConfigurator) { slot.key = code; slot.fromConfigurator = true; configuratorKeys += 1; }
+      }
+    }
+  } catch { /* no configurator layout */ }
   try {
     const saved = JSON.parse(localStorage.getItem('aran-practice-keys') || '{}');
     for (const slot of SLOTS) if (saved[slot.id]) slot.key = saved[slot.id];
   } catch { /* defaults */ }
+  // Jump stays on Space / ↑ when Alt is bound to a skill.
+  const jumpCodes = () => ['AltLeft', 'AltRight', 'Space', 'ArrowUp'].filter(code => !SLOTS.some(slot => slot.key === code));
   const keyName = code => code.replace(/^Key|^Digit/, '').replace('Arrow', '').replace('Space', '空白');
 
   // --- world --------------------------------------------------------------------------------------------
   const canvas = document.getElementById('stage');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, FLOOR = H - 70;
-  const WINDOW_MS = 120000, REACH = 300, MOVE = 0.42, GRAVITY = 0.0026, JUMP = 0.92;
+  const WINDOW_MS = 120000, MOVE = 0.26, GRAVITY = 0.0026, JUMP = 0.92;
   const dummy = { x: W * 0.68, w: 46, h: 96 };
   const images = new Map();
   const image = src => {
@@ -40,6 +63,7 @@
   };
   for (const skill of data.skills) if (skill.preview) image(skill.preview.src);
 
+  const estimates = document.getElementById('opt-estimates');
   let state;
   function reset() {
     state = {
@@ -51,9 +75,19 @@
   }
 
   // --- casting ------------------------------------------------------------------------------------------
-  function inReach() {
-    const dx = dummy.x - state.player.x;
-    return Math.abs(dx) <= REACH && (Math.abs(dx) < 40 || Math.sign(dx) === state.player.facing);
+  // Reach comes from Battle/Target (MaxWidth, front/back). The table unit is assumed to be 3.2 per canvas pixel;
+  // skills that target "SelfActor" resolve their area elsewhere in the client, so they get a wide area around the caster.
+  const UNIT = 1 / 3.2, SELF_REACH = 520;
+  function reachOf(skill) {
+    const r = skill && skill.range;
+    if (!r || !Number(r.MaxWidth)) return { front: SELF_REACH, back: SELF_REACH };
+    const width = Number(r.MaxWidth) * UNIT;
+    return { front: r.DirectionFront === 'TRUE' ? width : 40, back: r.DirectionBack === 'TRUE' ? width : 40 };
+  }
+  function inReach(skill = byId.beyonder1) {
+    const reach = reachOf(skill);
+    const ahead = (dummy.x - state.player.x) * state.player.facing;
+    return ahead >= 0 ? ahead <= reach.front : -ahead <= reach.back;
   }
   function record(skill, hits, damagePerHit) {
     const row = state.stats[skill.name] || (state.stats[skill.name] = { casts: 0, hits: 0, damage: 0 });
@@ -66,8 +100,19 @@
   function land(skill) {
     if (state.ended) return;
     const hits = Number(skill.hits || 0), damage = Number(skill.damage || 0);
-    if (!hits || !inReach()) { state.floaters.push({ text: 'MISS', x: state.player.x, y: state.player.y - 120, born: state.now, miss: true }); return; }
-    record(skill, hits, damage);
+    if (!hits || !inReach(skill)) { state.floaters.push({ text: 'MISS', x: state.player.x, y: state.player.y - 120, born: state.now, miss: true }); return; }
+    record(skill, skill.id === 'last3' ? 192 : hits, damage);
+    // 極冰風暴 leaves a 10 s curse ring: every Beyonder form (and 白虎) that lands adds one 恐狼詛咒 wave,
+    // six stacks x 15 hits, at most 32 waves per cast (measured in the waterway logs).
+    if (skill.id === 'tempest') state.curse = { until: state.now + 10000, waves: 0 };
+    if ((skill.id.startsWith('beyonder') || skill.id === 'white') && byId.curse && state.curse && state.now <= state.curse.until && state.curse.waves < 32) {
+      state.curse.waves += 1;
+      record(byId.curse, 90, Number(byId.curse.damage));
+    }
+    // 鬥氣波動 lasts 6 s. Its attack interval is not decoded: shown only when "估計項" is on (one 42-hit attack per second).
+    if (skill.id === 'surge' && estimates.checked) {
+      for (let i = 1; i <= 6; i += 1) state.pending.push({ at: state.now + i * 1000, skill: { ...skill, id: 'surge-tick', name: skill.name + '（估）' } });
+    }
     // 瑪哈一擊 rides on Beyonder hits with its own 2 s cooldown.
     if (skill.id.startsWith('beyonder') && byId.maha && state.now >= state.mahaReady) {
       state.mahaReady = state.now + (byId.maha.cooldownMs || 2000);
@@ -94,6 +139,7 @@
     step += 1;
     if (step >= slot.steps.length) {
       state.combo[slot.id] = { step: 0, until: 0 };
+      if (slot.id === 'last') state.cooldown.last = state.now + 30000; // 最終勝者 goes on a 30 s cooldown after the third hit
       // third Beyonder form is followed by 終極比耀德・白虎
       if (slot.id === 'beyonder' && byId.white) {
         state.pending.push({ at: p.lockUntil + (byId.white.hitOffsetMs ?? 300), skill: byId.white, effect: true });
@@ -122,7 +168,7 @@
     }
     if (event.code === 'Escape') { reset(); return; }
     if (['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(event.code)) { held.add(event.code); event.preventDefault(); return; }
-    if (['AltLeft', 'AltRight', 'Space', 'ArrowUp'].includes(event.code)) { event.preventDefault(); if (!event.repeat) jump(); return; }
+    if (jumpCodes().includes(event.code)) { event.preventDefault(); if (!event.repeat) jump(); return; }
     const slot = SLOTS.find(s => s.key === event.code);
     if (slot) { event.preventDefault(); cast(slot); }
   });
@@ -214,7 +260,8 @@
     // reach guide
     const p = state.player;
     ctx.strokeStyle = inReach() ? 'rgba(63,216,209,.55)' : 'rgba(255,255,255,.14)';
-    ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(p.x, FLOOR + 10); ctx.lineTo(p.x + p.facing * REACH, FLOOR + 10); ctx.stroke(); ctx.setLineDash([]);
+    const guide = reachOf(byId.beyonder1);
+    ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(p.x, FLOOR + 10); ctx.lineTo(p.x + p.facing * guide.front, FLOOR + 10); ctx.stroke(); ctx.setLineDash([]);
     // player (stand-in figure with a polearm)
     const locked = state.now < p.lockUntil;
     ctx.save(); ctx.translate(p.x, p.y); ctx.scale(p.facing, 1);
@@ -274,6 +321,7 @@
     draw(); hud();
     requestAnimationFrame(frame);
   }
+  document.getElementById('pr-keys-source').textContent = configuratorKeys ? ` 已套用技能配置器存的 ${configuratorKeys} 個鍵位。` : ' 尚未在技能配置器儲存狂狼的 PC 鍵位，使用預設鍵。';
   reset(); renderSlots();
   window.practice = { state: () => state, cast: id => cast(SLOTS.find(s => s.id === id)), slots: SLOTS };
   requestAnimationFrame(frame);

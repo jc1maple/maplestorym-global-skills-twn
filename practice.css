@@ -37,3 +37,5 @@ body { background:var(--bg); color:var(--ink); font-family:"Noto Sans TC","Micro
 .pr-log th { color:var(--muted); font-weight:600; }
 .pr-note { margin-top:10px; }
 @media (max-width:760px), (pointer:coarse) { .pr-touch { display:flex; } }
+.pr-opt { color:var(--soft); font-size:.8rem; margin-left:auto; }
+.pr-opt + button { margin-left:0; }

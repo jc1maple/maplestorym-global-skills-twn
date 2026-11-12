@@ -38,7 +38,7 @@ test('practice ground: move, combo into the auto follow-ups, cooldown, 120 s cou
     await page.keyboard.down('ArrowRight');
     await page.waitForTimeout(400);
     await page.keyboard.up('ArrowRight');
-    assert(await page.evaluate(() => window.practice.state().player.x) > start + 80);
+    assert(await page.evaluate(() => window.practice.state().player.x) > start + 50);
     for (let i = 0; i < 3; i += 1) { await page.keyboard.press('KeyQ'); await page.waitForTimeout(420); }
     await page.waitForTimeout(1200);
     await page.keyboard.press('Digit1');
